@@ -336,7 +336,10 @@ def score_affinity(course, profile):
         like_bonus = 0.3 if subj in profile["likes"] else 0
         dislike_pen = -0.4 if subj in profile["dislikes"] else 0
         score += (grade_norm + like_bonus + dislike_pen) * weight
-    return max(0, min(100, (score / total_w) * 100)) if total_w else 50
+        
+    # 🚨 수정 포인트 1: 국영수과사 반영이 0인 체육 같은 과목이 
+    # 기본 50점을 받아 억울하게 점수가 깎이는 걸 막기 위해 기본점수를 80점으로 상향!
+    return max(0, min(100, (score / total_w) * 100)) if total_w else 80
 
 def score_learning_style(course, profile):
     style = profile["learning_style"]
@@ -368,12 +371,10 @@ def score_grade_comp(course, profile):
     base = gc_map.get(course["gc"], 60)
     return 70 + (base - 70) * (sens / 5)
 
-# 2. calc_total_score 함수 교체 (score_career 호출 시 course_name 전달)
 def calc_total_score(course_name, course, profile):
     weights = {"career": 0.35, "affinity": 0.25, "style": 0.10, "eval": 0.10, "workload": 0.10, "grade": 0.10}
     scores = {
-        # 👇 방금 수정한 score_career 함수에 맞춰서 course_name을 넘겨주도록 수정
-        "career": score_career(course_name, course, profile), 
+        "career": score_career(course_name, course, profile),
         "affinity": score_affinity(course, profile),
         "style": score_learning_style(course, profile),
         "eval": score_eval(course, profile),
@@ -382,15 +383,17 @@ def calc_total_score(course_name, course, profile):
     }
     total = sum(scores[k] * weights[k] for k in weights)
     
-    # 강력한 진로 페널티
     if profile["career_tracks"] and scores["career"] == 0:
         total *= 0.7  
         
-    job = profile.get("dream_job", "").strip()
+    job = profile.get("dream_job", "").strip().replace(" ", "")
     if job:
         kw_all = course.get("kw", []) + [course_name]
-        if any(job in kw or kw in job for kw in kw_all):
-            total = min(100, total + 5)
+        if any(kw in job or job in kw for kw in kw_all):
+            # 🚨 수정 포인트 2: 희망 직업("체육")과 키워드("체육")가 겹치면 
+            # 가산점을 무려 +15점 줘서 음악, 미술을 제치고 압도적 1위를 하도록 세팅!
+            total = min(100, total + 15) 
+            
     return round(total, 1), scores
 
 def generate_explanation(course_name, course, scores, profile):
