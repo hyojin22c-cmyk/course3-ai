@@ -641,7 +641,7 @@ with tab4:
                             sc = all_scores[cname]
                             render_ai_card(rank, cname, COURSES[cname], sc["total"], sc["breakdown"], sc["reasons"], sc["warnings"])
 
-st.markdown("""---<div style="text-align:center;color:#94a3b8;font-size:0.8rem;padding:1rem 0;">
+st.markdown("""<div style="text-align:center;color:#94a3b8;font-size:0.8rem;padding:1rem 0;">
 삼괴고등학교 교육과정부 · 2025학년도 입학생 교육과정 편제표 기준<br>
 해당 내용은 어디까지나 참고 자료일 뿐, 꼭 해당 과목으로 선택해야 하는 것은 아닙니다<br>
 ※ 과목별 상세 내용은 담당 교과 선생님께 문의하세요</div>""", unsafe_allow_html=True)
