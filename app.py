@@ -427,21 +427,21 @@ def render_ai_card(rank, name, info, total_score, scores, reasons, warnings):
     warnings_html = "".join(f"<li>⚠️ {w}</li>" for w in warnings)
     warn_block = f'<div class="ai-warning"><ul style="margin:0;padding-left:1.2rem;">{warnings_html}</ul></div>' if warnings else ""
     st.markdown(f"""<div class="{cls}">
-        <div style="display:flex;align-items:center;margin-bottom:0.4rem;">
-            <span class="ai-score {sc_cls}">{total_score}점</span>
-            <span class="course-name" style="margin-bottom:0;">{name}</span>
-        </div>
-        <div style="margin-bottom:0.5rem;">
-            <div class="score-bar-bg"><div class="score-bar-fill {sc_cls}" style="width:{total_score}%;"></div></div>
-        </div>
-        <div style="margin-bottom:0.4rem;">
-            <span class="badge badge-group">{info["grp"]} · {info["cr"]}학점</span>
-            <span class="badge {ev_cls}">{info["eval"]}</span>
-            {tracks_html}
-        </div>
-        <div class="course-desc">{info["desc"]}</div>
-        <div class="ai-reason"><b>추천 이유:</b><ul style="margin:0.2rem 0 0;padding-left:1.2rem;">{reasons_html}</ul></div>
-        {warn_block}
+    <div style="display:flex;align-items:center;margin-bottom:0.4rem;">
+    <span class="ai-score {sc_cls}">{total_score}점</span>
+    <span class="course-name" style="margin-bottom:0;">{name}</span>
+    </div>
+    <div style="margin-bottom:0.5rem;">
+    <div class="score-bar-bg"><div class="score-bar-fill {sc_cls}" style="width:{total_score}%;"></div></div>
+    </div>
+    <div style="margin-bottom:0.4rem;">
+    <span class="badge badge-group">{info["grp"]} · {info["cr"]}학점</span>
+    <span class="badge {ev_cls}">{info["eval"]}</span>
+    {tracks_html}
+    </div>
+    <div class="course-desc">{info["desc"]}</div>
+    <div class="ai-reason"><b>추천 이유:</b><ul style="margin:0.2rem 0 0;padding-left:1.2rem;">{reasons_html}</ul></div>
+    {warn_block}
     </div>""", unsafe_allow_html=True)
 
 # ============================================================
