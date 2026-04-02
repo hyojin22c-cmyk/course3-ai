@@ -490,7 +490,7 @@ def render_combo_summary(combo):
                 # 상위 추천 과목 출력 (동점자 모두 포함)
                 for rank, cname in enumerate(top_courses, 1):
                     sc = all_scores[cname]
-                    render_ai_card(rank, cname, COURSES[cname], sc["total"], sc["breakdown"], sc["reasons"], sc["warnings"])
+                    render_ai_card(rank, cname, COURSES[cname], sc["total"], sc["breakdown"], sc["reasons"], sc["warnings"], pick_count)
 
                 # 나머지 과목은 접어두기
                 if remaining:
@@ -499,7 +499,7 @@ def render_combo_summary(combo):
                             # 순위 번호가 이어서 나오도록 계산
                             rank = len(top_courses) + i + 1 
                             sc = all_scores[cname]
-                            render_ai_card(rank, cname, COURSES[cname], sc["total"], sc["breakdown"], sc["reasons"], sc["warnings"])
+                            render_ai_card(rank, cname, COURSES[cname], sc["total"], sc["breakdown"], sc["reasons"], sc["warnings"], pick_count)
 
 def get_rec_names(combo):
     names = set()
