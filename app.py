@@ -284,8 +284,17 @@ SUBJECTS = ["국어", "수학", "영어", "과학", "사회"]
 def score_career(course, profile):
     if not profile["career_tracks"]:
         return 50
-    overlap = len(set(course["tracks"]) & set(profile["career_tracks"]))
-    return min(100, (overlap / max(len(profile["career_tracks"]), 1)) * 100)
+    
+    # 학생이 선택한 긴 계열 이름들을 하나의 텍스트로 묶음
+    # 예: "의약계 (의대·치대...), 자연과학 (수학·물리...)"
+    p_tracks_str = " ".join(profile["career_tracks"])
+    
+    # 과목의 태그(예:"의약계", "자연과학")가 학생 계열 문자열 안에 포함되어 있는지 확인
+    for t in course["tracks"]:
+        if t in p_tracks_str:
+            return 100  # 진로와 조금이라도 겹치면 진로점수 만점!
+            
+    return 0  # 겹치는 게 하나도 없으면 0점
 
 def score_affinity(course, profile):
     aff = course["aff"]
