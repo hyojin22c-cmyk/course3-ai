@@ -281,20 +281,32 @@ SUBJECTS = ["국어", "수학", "영어", "과학", "사회"]
 # ============================================================
 # AI 점수 엔진
 # ============================================================
-def score_career(course, profile):
+# 1. score_career 함수 교체 (course_name 파라미터 추가 및 TRACK_COMBOS 검사 로직 추가)
+def score_career(course_name, course, profile):
     if not profile["career_tracks"]:
         return 50
-    
-    # 학생이 선택한 긴 계열 이름들을 하나의 텍스트로 묶음
-    # 예: "의약계 (의대·치대...), 자연과학 (수학·물리...)"
+        
     p_tracks_str = " ".join(profile["career_tracks"])
     
-    # 과목의 태그(예:"의약계", "자연과학")가 학생 계열 문자열 안에 포함되어 있는지 확인
+    # [조건 1] 과목에 설정된 자체 태그에 포함되어 있는지 검사
     for t in course["tracks"]:
         if t in p_tracks_str:
-            return 100  # 진로와 조금이라도 겹치면 진로점수 만점!
+            return 100
             
-    return 0  # 겹치는 게 하나도 없으면 0점
+    # 🚨 [조건 2 - 핵심 해결책] 선생님이 만든 TRACK_COMBOS 추천 목록에 들어있는 과목인지 검사
+    for trk in profile["career_tracks"]:
+        if trk in TRACK_COMBOS:
+            combo = TRACK_COMBOS[trk]
+            for sem in ["1학기", "2학기"]:
+                for grp in ["택3", "택1", "택4"]:
+                    items = combo[sem][grp]
+                    # 리스트인 경우(택3, 택4)와 단일 문자열인 경우(택1) 모두 처리
+                    if isinstance(items, list):
+                        if course_name in items: return 100
+                    else:
+                        if course_name == items: return 100
+                        
+    return 0 # 조건 1, 2 모두 해당 안 되면 0점 (이후 30% 감점 페널티 작동)
 
 def score_affinity(course, profile):
     aff = course["aff"]
@@ -339,11 +351,12 @@ def score_grade_comp(course, profile):
     base = gc_map.get(course["gc"], 60)
     return 70 + (base - 70) * (sens / 5)
 
+# 2. calc_total_score 함수 교체 (score_career 호출 시 course_name 전달)
 def calc_total_score(course_name, course, profile):
-    # 진로 가중치를 35%로 약간 올림
     weights = {"career": 0.35, "affinity": 0.25, "style": 0.10, "eval": 0.10, "workload": 0.10, "grade": 0.10}
     scores = {
-        "career": score_career(course, profile),
+        # 👇 방금 수정한 score_career 함수에 맞춰서 course_name을 넘겨주도록 수정
+        "career": score_career(course_name, course, profile), 
         "affinity": score_affinity(course, profile),
         "style": score_learning_style(course, profile),
         "eval": score_eval(course, profile),
@@ -352,7 +365,7 @@ def calc_total_score(course_name, course, profile):
     }
     total = sum(scores[k] * weights[k] for k in weights)
     
-    # 🚨 [추가된 로직] 강력한 진로 페널티: 희망 진로를 선택했는데 일치하는 게 0점이면 총점의 30%를 삭감!
+    # 강력한 진로 페널티
     if profile["career_tracks"] and scores["career"] == 0:
         total *= 0.7  
         
