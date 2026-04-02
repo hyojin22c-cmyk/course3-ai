@@ -629,8 +629,8 @@ with tab1:
             <div style="font-size:3rem;margin-bottom:1rem;">🤖</div>
             <h3 style="color:#1a365d;">AI 맞춤 추천을 받아보세요!</h3>
             <p style="color:#64748b;font-size:0.95rem;max-width:500px;margin:0.5rem auto;">
-                왼쪽 사이드바에서 <b>나의 프로필</b>을 입력하고<br>
-                <b>AI 추천 받기</b> 버튼을 눌러주세요.</p></div>""", unsafe_allow_html=True)
+                왼쪽 사이드바에서 <b>나의 프로필</b>을 설정하면<br>
+                나에게 딱 맞는 과목을 추천해 드립니다.</p></div>""", unsafe_allow_html=True)
     else:
         # Profile summary banner
         strong_subjs = sorted(profile["grades"].items(), key=lambda x: x[1])[:2]
@@ -658,20 +658,39 @@ with tab1:
                 grp_courses = {k: v for k, v in COURSES.items() if v["sem"] == sem_filter and v["grp"] == grp}
                 if not grp_courses:
                     continue
+                
+                # 1. 점수순 정렬
                 sorted_courses = sorted(grp_courses.keys(), key=lambda x: all_scores[x]["total"], reverse=True)
                 pick_count = GRP_COUNT[grp]
+                
+                # 🚨 동점자 처리를 위한 커트라인 점수 확인
+                if len(sorted_courses) >= pick_count:
+                    cut_off_score = all_scores[sorted_courses[pick_count - 1]]["total"]
+                else:
+                    cut_off_score = -1
+
+                # 커트라인 점수 이상인 과목은 모두 '상위 추천'으로, 미만은 '나머지'로 분리
+                top_courses = [c for c in sorted_courses if all_scores[c]["total"] >= cut_off_score]
+                remaining = [c for c in sorted_courses if all_scores[c]["total"] < cut_off_score]
+
                 st.markdown(f'<div class="group-title">📌 {grp} 그룹 — {pick_count}개 선택</div>', unsafe_allow_html=True)
-                st.caption(f"🏆 상위 {pick_count}개 추천 과목")
-                for rank, cname in enumerate(sorted_courses, 1):
+                
+                # 동점자 때문에 추천 개수가 늘어났다면 안내 문구 변경
+                if len(top_courses) > pick_count:
+                    st.caption(f"🏆 상위 추천 과목 (동점 포함 총 {len(top_courses)}개)")
+                else:
+                    st.caption(f"🏆 상위 {pick_count}개 추천 과목")
+
+                # 상위 추천 과목 출력 (동점자 모두 포함)
+                for rank, cname in enumerate(top_courses, 1):
                     sc = all_scores[cname]
-                    if rank <= pick_count:
-                        render_ai_card(rank, cname, COURSES[cname], sc["total"], sc["breakdown"], sc["reasons"], sc["warnings"])
-                    else:
-                        break
-                remaining = sorted_courses[pick_count:]
+                    render_ai_card(rank, cname, COURSES[cname], sc["total"], sc["breakdown"], sc["reasons"], sc["warnings"])
+
+                # 나머지 과목은 접어두기
                 if remaining:
                     with st.expander(f"나머지 {len(remaining)}개 과목 보기"):
-                        for rank, cname in enumerate(remaining, pick_count + 1):
+                        for i, cname in enumerate(remaining):
+                            rank = len(top_courses) + i + 1 
                             sc = all_scores[cname]
                             render_ai_card(rank, cname, COURSES[cname], sc["total"], sc["breakdown"], sc["reasons"], sc["warnings"])
 
