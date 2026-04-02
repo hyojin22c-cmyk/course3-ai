@@ -281,32 +281,37 @@ SUBJECTS = ["국어", "수학", "영어", "과학", "사회"]
 # ============================================================
 # AI 점수 엔진
 # ============================================================
-# 1. score_career 함수 교체 (course_name 파라미터 추가 및 TRACK_COMBOS 검사 로직 추가)
 def score_career(course_name, course, profile):
     if not profile["career_tracks"]:
         return 50
         
+    # 1. 과목에 설정된 자체 태그 검사
     p_tracks_str = " ".join(profile["career_tracks"])
-    
-    # [조건 1] 과목에 설정된 자체 태그에 포함되어 있는지 검사
     for t in course["tracks"]:
         if t in p_tracks_str:
             return 100
             
-    # 🚨 [조건 2 - 핵심 해결책] 선생님이 만든 TRACK_COMBOS 추천 목록에 들어있는 과목인지 검사
+    # 🚨 [새로 추가된 로직] 희망 직업(dream_job) 키워드 텍스트 직접 매칭!
+    job = profile.get("dream_job", "").strip().replace(" ", "")
+    if job:
+        kw_all = course.get("kw", []) + [course_name]
+        # 예: 과목 키워드("영어")가 희망 직업("영어교사")에 들어있으면 무조건 진로 만점!
+        if any(job in kw or kw in job for kw in kw_all):
+            return 100
+
+    # 3. TRACK_COMBOS 추천 목록에 들어있는 과목인지 검사
     for trk in profile["career_tracks"]:
         if trk in TRACK_COMBOS:
             combo = TRACK_COMBOS[trk]
             for sem in ["1학기", "2학기"]:
                 for grp in ["택3", "택1", "택4"]:
                     items = combo[sem][grp]
-                    # 리스트인 경우(택3, 택4)와 단일 문자열인 경우(택1) 모두 처리
                     if isinstance(items, list):
                         if course_name in items: return 100
                     else:
                         if course_name == items: return 100
                         
-    return 0 # 조건 1, 2 모두 해당 안 되면 0점 (이후 30% 감점 페널티 작동)
+    return 0
 
 def score_affinity(course, profile):
     aff = course["aff"]
