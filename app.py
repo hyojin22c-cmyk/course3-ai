@@ -496,6 +496,19 @@ if submitted:
 st.markdown("""<div class="main-header"><h1>📚 삼괴고 3학년 선택과목 가이드</h1>
 <p>2025학년도 입학생 교육과정 편제 기준 · 진로별 추천 조합 & AI 맞춤 추천</p></div>""", unsafe_allow_html=True)
 
+# 🚨 메인 페이지 상단 안내/경고 문구 추가
+st.markdown("""
+<div style="background-color: #fffbeb; border: 1px solid #fef3c7; border-left: 6px solid #f59e0b; border-radius: 8px; padding: 1.2rem 1.5rem; margin-bottom: 2rem;">
+    <div style="font-size: 1.15rem; font-weight: 700; color: #b45309; margin-bottom: 0.4rem;">
+        ⚠️ 과목 선택 전 반드시 읽어주세요!
+    </div>
+    <div style="color: #92400e; font-size: 0.95rem; line-height: 1.6;">
+        본 가이드 및 AI 맞춤 추천 결과는 학생 여러분의 선택을 돕기 위한 <b>참고자료</b>일 뿐입니다.<br>
+        최종 과목 선택은 본인의 희망 진로, 목표 대학의 입시 요강을 꼼꼼히 확인하고, <b>교과 담당 선생님 및 담임 선생님과의 충분한 상담을 통해 신중하게 결정</b>하시기 바랍니다.
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
 tab1, tab2, tab3, tab4 = st.tabs(["🎯 진로별 추천 조합", "🔍 키워드 검색", "📋 전체 과목 보기", "🤖 AI 맞춤 추천"])
 
 # ── 탭1 ──
