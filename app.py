@@ -385,10 +385,13 @@ def render_card(name, info, is_rec=False):
     ev_cls = "badge-eval-rel" if "상대" in info["eval"] else "badge-eval-abs"
     rec = '<span class="badge badge-rec">⭐ 추천</span> ' if is_rec else ""
     tracks = "".join(f'<span class="badge badge-track">{t}</span>' for t in info["tracks"])
+    
+    # 🚨 여기부터 들여쓰기 절대 금지! 🚨
     st.markdown(f"""<div class="{cls}">
-        <div class="course-name">{rec}{name}</div>
-        <div style="margin-bottom:0.4rem;"><span class="badge badge-group">{info["grp"]} · {info["cr"]}학점</span><span class="badge {ev_cls}">{info["eval"]}</span></div>
-        <div class="course-desc">{info["desc"]}</div><div>{tracks}</div></div>""", unsafe_allow_html=True)
+<div class="course-name">{rec}{name}</div>
+<div style="margin-bottom:0.4rem;"><span class="badge badge-group">{info["grp"]} · {info["cr"]}학점</span><span class="badge {ev_cls}">{info["eval"]}</span></div>
+<div class="course-desc">{info["desc"]}</div><div>{tracks}</div>
+</div>""", unsafe_allow_html=True)
 
 def render_group(sem_filter, grp, rec_names):
     items = {k: v for k, v in COURSES.items() if v["sem"] == sem_filter and v["grp"] == grp}
@@ -426,23 +429,25 @@ def render_ai_card(rank, name, info, total_score, scores, reasons, warnings):
     reasons_html = "".join(f"<li>{r}</li>" for r in reasons)
     warnings_html = "".join(f"<li>⚠️ {w}</li>" for w in warnings)
     warn_block = f'<div class="ai-warning"><ul style="margin:0;padding-left:1.2rem;">{warnings_html}</ul></div>' if warnings else ""
+    
+    # 🚨 여기부터 들여쓰기 절대 금지! 🚨
     st.markdown(f"""<div class="{cls}">
-    <div style="display:flex;align-items:center;margin-bottom:0.4rem;">
-    <span class="ai-score {sc_cls}">{total_score}점</span>
-    <span class="course-name" style="margin-bottom:0;">{name}</span>
-    </div>
-    <div style="margin-bottom:0.5rem;">
-    <div class="score-bar-bg"><div class="score-bar-fill {sc_cls}" style="width:{total_score}%;"></div></div>
-    </div>
-    <div style="margin-bottom:0.4rem;">
-    <span class="badge badge-group">{info["grp"]} · {info["cr"]}학점</span>
-    <span class="badge {ev_cls}">{info["eval"]}</span>
-    {tracks_html}
-    </div>
-    <div class="course-desc">{info["desc"]}</div>
-    <div class="ai-reason"><b>추천 이유:</b><ul style="margin:0.2rem 0 0;padding-left:1.2rem;">{reasons_html}</ul></div>
-    {warn_block}
-    </div>""", unsafe_allow_html=True)
+<div style="display:flex;align-items:center;margin-bottom:0.4rem;">
+<span class="ai-score {sc_cls}">{total_score}점</span>
+<span class="course-name" style="margin-bottom:0;">{name}</span>
+</div>
+<div style="margin-bottom:0.5rem;">
+<div class="score-bar-bg"><div class="score-bar-fill {sc_cls}" style="width:{total_score}%;"></div></div>
+</div>
+<div style="margin-bottom:0.4rem;">
+<span class="badge badge-group">{info["grp"]} · {info["cr"]}학점</span>
+<span class="badge {ev_cls}">{info["eval"]}</span>
+{tracks_html}
+</div>
+<div class="course-desc">{info["desc"]}</div>
+<div class="ai-reason"><b>추천 이유:</b><ul style="margin:0.2rem 0 0;padding-left:1.2rem;">{reasons_html}</ul></div>
+{warn_block}
+</div>""", unsafe_allow_html=True)
 
 # ============================================================
 # 사이드바 프로필 폼
