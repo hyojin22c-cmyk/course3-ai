@@ -331,7 +331,8 @@ def score_grade_comp(course, profile):
     return 70 + (base - 70) * (sens / 5)
 
 def calc_total_score(course_name, course, profile):
-    weights = {"career": 0.30, "affinity": 0.25, "style": 0.15, "eval": 0.10, "workload": 0.10, "grade": 0.10}
+    # 진로 가중치를 35%로 약간 올림
+    weights = {"career": 0.35, "affinity": 0.25, "style": 0.10, "eval": 0.10, "workload": 0.10, "grade": 0.10}
     scores = {
         "career": score_career(course, profile),
         "affinity": score_affinity(course, profile),
@@ -341,6 +342,11 @@ def calc_total_score(course_name, course, profile):
         "grade": score_grade_comp(course, profile),
     }
     total = sum(scores[k] * weights[k] for k in weights)
+    
+    # 🚨 [추가된 로직] 강력한 진로 페널티: 희망 진로를 선택했는데 일치하는 게 0점이면 총점의 30%를 삭감!
+    if profile["career_tracks"] and scores["career"] == 0:
+        total *= 0.7  
+        
     job = profile.get("dream_job", "").strip()
     if job:
         kw_all = course.get("kw", []) + [course_name]
@@ -367,6 +373,7 @@ def generate_explanation(course_name, course, scores, profile):
         reasons.append("원하는 공부 부담 수준과 잘 맞아요")
     if not reasons:
         reasons.append("전반적으로 균형 잡힌 선택이에요")
+        
     for subj, min_g in course.get("rmg", {}).items():
         student_g = profile["grades"].get(subj, 3)
         if student_g > min_g:
@@ -375,8 +382,12 @@ def generate_explanation(course_name, course, scores, profile):
         warnings.append("원하는 부담 수준보다 학습량이 많을 수 있어요")
     if course["diff"] >= 4 and scores["affinity"] < 50:
         warnings.append("난이도가 높은 과목이라 관련 기초 과목 성적을 확인해보세요")
+        
+    # 🚨 [추가된 로직] 경고 문구 추가
+    if profile["career_tracks"] and scores["career"] == 0:
+        warnings.append("선택하신 희망 진로 계열과 무관한 과목입니다. 단순 성적 관리가 목적이 아니라면 재고해보세요.")
+        
     return reasons, warnings
-
 # ============================================================
 # 렌더링 함수
 # ============================================================
