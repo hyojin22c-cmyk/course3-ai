@@ -450,6 +450,22 @@ def render_ai_card(rank, name, info, total_score, scores, reasons, warnings):
 </div>""", unsafe_allow_html=True)
 
 # ============================================================
+# 기본 세팅 (앱 최초 실행 시 빈 화면 방지)
+# ============================================================
+if "profile" not in st.session_state:
+    st.session_state.profile = {
+        "dream_job": "",
+        "career_tracks": [],
+        "grades": {subj: 3 for subj in SUBJECTS},
+        "likes": [],
+        "dislikes": [],
+        "learning_style": "골고루",
+        "eval_pref": "상관없어요",
+        "workload_pref": 3,
+        "grade_sens": 3,
+    }
+
+# ============================================================
 # 사이드바 프로필 폼
 # ============================================================
 st.sidebar.markdown("### 🤖 나의 프로필 설정")
@@ -514,81 +530,10 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-tab1, tab2, tab3, tab4 = st.tabs(["🎯 진로별 추천 조합", "🔍 키워드 검색", "📋 전체 과목 보기", "🤖 AI 맞춤 추천"])
+tab1, tab2, tab3, tab4 = st.tabs(["🤖 AI 맞춤 추천", "🎯 진로별 추천 조합", "🔍 키워드 검색", "📋 전체 과목 보기"])
 
 # ── 탭1 ──
 with tab1:
-    sel = st.selectbox("관심 진로를 선택하세요", list(TRACK_COMBOS.keys()))
-    combo = TRACK_COMBOS[sel]
-    rec_names = get_rec_names(combo)
-
-    st.markdown(f'<div class="combo-box"><div class="combo-title">🎯 {sel}</div><div class="course-desc" style="margin-bottom:0.8rem;">{combo["desc"]}</div>', unsafe_allow_html=True)
-    render_combo_summary(combo)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown("---")
-    st.markdown("#### 과목 상세 정보")
-    st.caption("⭐ 추천 과목이 상단에, 같은 그룹의 나머지 과목은 펼쳐서 볼 수 있습니다.")
-
-    for sem_label, sem_filter, _ in SEM_INFO:
-        st.markdown(f'<div class="semester-title">{sem_label}</div>', unsafe_allow_html=True)
-        for grp in GRP_ORDER:
-            st.markdown(f'<div class="group-title">📌 {grp} 그룹 — {GRP_COUNT[grp]}개 선택</div>', unsafe_allow_html=True)
-            render_group(sem_filter, grp, rec_names)
-
-# ── 탭2 ──
-with tab2:
-    q = st.text_input("키워드를 입력하세요", placeholder="예: 의대, 반도체, 외교, 코딩, 간호 ...")
-    st.caption("쉼표로 여러 키워드를 입력할 수 있어요")
-    if q.strip():
-        qs = [x.strip().lower() for x in q.split(",") if x.strip()]
-        matched = set()
-        for name, info in COURSES.items():
-            txt = (name + " " + info["desc"] + " " + " ".join(info["kw"]) + " " + " ".join(info["tracks"])).lower()
-            if any(kw in txt for kw in qs):
-                matched.add(name)
-        st.markdown(f'<p style="color:#64748b;font-size:0.9rem;">총 <b>{len(matched)}개</b> 과목이 검색되었습니다.</p>', unsafe_allow_html=True)
-        if matched:
-            for sem_label, sem_filter, _ in SEM_INFO:
-                sem_match = {k for k in matched if COURSES[k]["sem"] == sem_filter}
-                if not sem_match:
-                    continue
-                st.markdown(f'<div class="semester-title">{sem_label}</div>', unsafe_allow_html=True)
-                grps = sorted({COURSES[k]["grp"] for k in sem_match}, key=lambda x: GRP_ORDER.index(x))
-                for grp in grps:
-                    st.markdown(f'<div class="group-title">📌 {grp} 그룹 — {GRP_COUNT[grp]}개 선택</div>', unsafe_allow_html=True)
-                    render_group(sem_filter, grp, matched)
-        else:
-            st.warning("검색 조건에 맞는 과목이 없습니다. 다른 키워드를 시도해보세요.")
-    else:
-        st.info("👆 키워드를 입력하면 관련 과목을 검색하고, 같은 선택 그룹의 나머지 과목도 함께 보여줍니다.")
-
-# ── 탭3 ──
-with tab3:
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        sr = st.checkbox("5등급 상대평가 과목", True, key="a_r")
-    with c2:
-        sa = st.checkbox("절대평가 과목", True, key="a_a")
-    with c3:
-        sp = st.checkbox("P/F 과목", True, key="a_p")
-    for sem_label, sem_filter, _ in SEM_INFO:
-        st.markdown(f'<div class="semester-title">{sem_label}</div>', unsafe_allow_html=True)
-        for grp in GRP_ORDER:
-            st.markdown(f'<div class="group-title">📌 {grp} 그룹 — {GRP_COUNT[grp]}개 선택</div>', unsafe_allow_html=True)
-            for name, info in COURSES.items():
-                if info["sem"] != sem_filter or info["grp"] != grp:
-                    continue
-                if "상대" in info["eval"] and not sr:
-                    continue
-                if "절대" in info["eval"] and not sa:
-                    continue
-                if "P/F" in info["eval"] and not sp:
-                    continue
-                render_card(name, info)
-
-# ── 탭4 ──
-with tab4:
     profile = st.session_state.get("profile")
     if not profile:
         st.markdown("""<div style="text-align:center;padding:3rem 1rem;">
@@ -640,6 +585,77 @@ with tab4:
                         for rank, cname in enumerate(remaining, pick_count + 1):
                             sc = all_scores[cname]
                             render_ai_card(rank, cname, COURSES[cname], sc["total"], sc["breakdown"], sc["reasons"], sc["warnings"])
+
+# ── 탭2 ──
+with tab2:
+    sel = st.selectbox("관심 진로를 선택하세요", list(TRACK_COMBOS.keys()))
+    combo = TRACK_COMBOS[sel]
+    rec_names = get_rec_names(combo)
+
+    st.markdown(f'<div class="combo-box"><div class="combo-title">🎯 {sel}</div><div class="course-desc" style="margin-bottom:0.8rem;">{combo["desc"]}</div>', unsafe_allow_html=True)
+    render_combo_summary(combo)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown("---")
+    st.markdown("#### 과목 상세 정보")
+    st.caption("⭐ 추천 과목이 상단에, 같은 그룹의 나머지 과목은 펼쳐서 볼 수 있습니다.")
+
+    for sem_label, sem_filter, _ in SEM_INFO:
+        st.markdown(f'<div class="semester-title">{sem_label}</div>', unsafe_allow_html=True)
+        for grp in GRP_ORDER:
+            st.markdown(f'<div class="group-title">📌 {grp} 그룹 — {GRP_COUNT[grp]}개 선택</div>', unsafe_allow_html=True)
+            render_group(sem_filter, grp, rec_names)
+
+# ── 탭3 ──
+with tab3:
+    q = st.text_input("키워드를 입력하세요", placeholder="예: 의대, 반도체, 외교, 코딩, 간호 ...")
+    st.caption("쉼표로 여러 키워드를 입력할 수 있어요")
+    if q.strip():
+        qs = [x.strip().lower() for x in q.split(",") if x.strip()]
+        matched = set()
+        for name, info in COURSES.items():
+            txt = (name + " " + info["desc"] + " " + " ".join(info["kw"]) + " " + " ".join(info["tracks"])).lower()
+            if any(kw in txt for kw in qs):
+                matched.add(name)
+        st.markdown(f'<p style="color:#64748b;font-size:0.9rem;">총 <b>{len(matched)}개</b> 과목이 검색되었습니다.</p>', unsafe_allow_html=True)
+        if matched:
+            for sem_label, sem_filter, _ in SEM_INFO:
+                sem_match = {k for k in matched if COURSES[k]["sem"] == sem_filter}
+                if not sem_match:
+                    continue
+                st.markdown(f'<div class="semester-title">{sem_label}</div>', unsafe_allow_html=True)
+                grps = sorted({COURSES[k]["grp"] for k in sem_match}, key=lambda x: GRP_ORDER.index(x))
+                for grp in grps:
+                    st.markdown(f'<div class="group-title">📌 {grp} 그룹 — {GRP_COUNT[grp]}개 선택</div>', unsafe_allow_html=True)
+                    render_group(sem_filter, grp, matched)
+        else:
+            st.warning("검색 조건에 맞는 과목이 없습니다. 다른 키워드를 시도해보세요.")
+    else:
+        st.info("👆 키워드를 입력하면 관련 과목을 검색하고, 같은 선택 그룹의 나머지 과목도 함께 보여줍니다.")
+
+# ── 탭4 ──
+with tab4:
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        sr = st.checkbox("5등급 상대평가 과목", True, key="a_r")
+    with c2:
+        sa = st.checkbox("절대평가 과목", True, key="a_a")
+    with c3:
+        sp = st.checkbox("P/F 과목", True, key="a_p")
+    for sem_label, sem_filter, _ in SEM_INFO:
+        st.markdown(f'<div class="semester-title">{sem_label}</div>', unsafe_allow_html=True)
+        for grp in GRP_ORDER:
+            st.markdown(f'<div class="group-title">📌 {grp} 그룹 — {GRP_COUNT[grp]}개 선택</div>', unsafe_allow_html=True)
+            for name, info in COURSES.items():
+                if info["sem"] != sem_filter or info["grp"] != grp:
+                    continue
+                if "상대" in info["eval"] and not sr:
+                    continue
+                if "절대" in info["eval"] and not sa:
+                    continue
+                if "P/F" in info["eval"] and not sp:
+                    continue
+                render_card(name, info)
 
 st.markdown("""<div style="text-align:center;color:#94a3b8;font-size:0.8rem;padding:1rem 0;">
 삼괴고등학교 교육과정부 · 2025학년도 입학생 교육과정 편제표 기준<br>
