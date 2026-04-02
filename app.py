@@ -458,12 +458,48 @@ def render_group(sem_filter, grp, rec_names):
                 render_card(n, i, False)
 
 def render_combo_summary(combo):
-    for sem_label, _, sem_key in SEM_INFO:
-        sem = combo[sem_key]
-        st.markdown(f'<div class="combo-sem">{sem_label}</div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="combo-item"><b>택3</b> (3과목) : {" / ".join(sem["택3"])}</div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="combo-item"><b>택1</b> (1과목) : {sem["택1"]}</div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="combo-item"><b>택4</b> (4과목) : {" / ".join(sem["택4"])}</div>', unsafe_allow_html=True)
+    for sem_label, sem_filter, _ in SEM_INFO:
+            st.markdown(f'<div class="semester-title">{sem_label}</div>', unsafe_allow_html=True)
+            for grp in GRP_ORDER:
+                grp_courses = {k: v for k, v in COURSES.items() if v["sem"] == sem_filter and v["grp"] == grp}
+                if not grp_courses:
+                    continue
+                    
+                # 1. 점수순 정렬
+                sorted_courses = sorted(grp_courses.keys(), key=lambda x: all_scores[x]["total"], reverse=True)
+                pick_count = GRP_COUNT[grp]
+                
+                # 🚨 [추가된 로직] 동점자 처리를 위한 커트라인(문닫고 들어가는) 점수 확인
+                if len(sorted_courses) >= pick_count:
+                    cut_off_score = all_scores[sorted_courses[pick_count - 1]]["total"]
+                else:
+                    cut_off_score = -1
+
+                # 🚨 [추가된 로직] 커트라인 점수 이상인 과목은 모두 '상위 추천'으로, 미만은 '나머지'로 분리
+                top_courses = [c for c in sorted_courses if all_scores[c]["total"] >= cut_off_score]
+                remaining = [c for c in sorted_courses if all_scores[c]["total"] < cut_off_score]
+
+                st.markdown(f'<div class="group-title">📌 {grp} 그룹 — {pick_count}개 선택</div>', unsafe_allow_html=True)
+                
+                # 동점자 때문에 추천 개수가 늘어났다면 안내 문구도 센스있게 변경!
+                if len(top_courses) > pick_count:
+                    st.caption(f"🏆 상위 추천 과목 (동점 포함 총 {len(top_courses)}개)")
+                else:
+                    st.caption(f"🏆 상위 {pick_count}개 추천 과목")
+
+                # 상위 추천 과목 출력 (동점자 모두 포함)
+                for rank, cname in enumerate(top_courses, 1):
+                    sc = all_scores[cname]
+                    render_ai_card(rank, cname, COURSES[cname], sc["total"], sc["breakdown"], sc["reasons"], sc["warnings"])
+
+                # 나머지 과목은 접어두기
+                if remaining:
+                    with st.expander(f"나머지 {len(remaining)}개 과목 보기"):
+                        for i, cname in enumerate(remaining):
+                            # 순위 번호가 이어서 나오도록 계산
+                            rank = len(top_courses) + i + 1 
+                            sc = all_scores[cname]
+                            render_ai_card(rank, cname, COURSES[cname], sc["total"], sc["breakdown"], sc["reasons"], sc["warnings"])
 
 def get_rec_names(combo):
     names = set()
