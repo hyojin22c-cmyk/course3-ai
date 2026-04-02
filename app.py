@@ -510,8 +510,9 @@ def get_rec_names(combo):
         names.update(s["택4"])
     return names
 
-def render_ai_card(rank, name, info, total_score, scores, reasons, warnings):
-    cls = "ai-card top" if rank <= 3 else "ai-card"
+def render_ai_card(rank, name, info, total_score, scores, reasons, warnings, pick_count):
+    # 🚨 3으로 고정되어 있던 부분을 pick_count로 변경!
+    cls = "ai-card top" if rank <= pick_count else "ai-card"
     sc_cls = "high" if total_score >= 70 else ("mid" if total_score >= 50 else "low")
     ev_cls = "badge-eval-rel" if "상대" in info["eval"] else "badge-eval-abs"
     tracks_html = "".join(f'<span class="badge badge-track">{t}</span>' for t in info["tracks"])
@@ -684,7 +685,7 @@ with tab1:
                 # 상위 추천 과목 출력 (동점자 모두 포함)
                 for rank, cname in enumerate(top_courses, 1):
                     sc = all_scores[cname]
-                    render_ai_card(rank, cname, COURSES[cname], sc["total"], sc["breakdown"], sc["reasons"], sc["warnings"])
+                    render_ai_card(rank, cname, COURSES[cname], sc["total"], sc["breakdown"], sc["reasons"], sc["warnings"], pick_count)
 
                 # 나머지 과목은 접어두기
                 if remaining:
@@ -692,7 +693,7 @@ with tab1:
                         for i, cname in enumerate(remaining):
                             rank = len(top_courses) + i + 1 
                             sc = all_scores[cname]
-                            render_ai_card(rank, cname, COURSES[cname], sc["total"], sc["breakdown"], sc["reasons"], sc["warnings"])
+                            render_ai_card(rank, cname, COURSES[cname], sc["total"], sc["breakdown"], sc["reasons"], sc["warnings"], pick_count)
 
 # ── 탭2 ──
 with tab2:
