@@ -42,6 +42,11 @@ st.markdown("""
     .score-bar-fill.high { background: linear-gradient(90deg, #059669, #34d399); }
     .score-bar-fill.mid { background: linear-gradient(90deg, #d97706, #fbbf24); }
     .score-bar-fill.low { background: linear-gradient(90deg, #9ca3af, #d1d5db); }
+    .block-container {
+    max-width: 1200px;
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
 </style>
 """, unsafe_allow_html=True)
 
