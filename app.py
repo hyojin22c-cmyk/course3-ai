@@ -417,25 +417,33 @@ SUBJECTS = ["국어", "수학", "영어", "과학", "사회"]
 def score_career(course_name, course, profile):
     if not profile["career_tracks"]:
         return 50
-    p_tracks_str = " ".join(profile["career_tracks"])
-    for t in course["tracks"]:
-        if t in p_tracks_str:
-            return 100
-    job = profile.get("dream_job", "").strip().replace(" ", "")
-    if job:
-        kw_all = course.get("kw", []) + [course_name]
-        if any(job in kw or kw in job for kw in kw_all):
-            return 100
+    
+    # 1순위: TRACK_COMBOS 추천 목록에 직접 포함된 과목 → 100
     for trk in profile["career_tracks"]:
         if trk in TRACK_COMBOS:
             combo = TRACK_COMBOS[trk]
-            for sem in ["1학기", "2학기"]:
-                for grp in ["택3", "택1", "택4"]:
+            for sem in combo:
+                if sem in ["desc"]: continue
+                for grp in combo[sem]:
                     items = combo[sem][grp]
                     if isinstance(items, list):
                         if course_name in items: return 100
                     else:
                         if course_name == items: return 100
+
+    # 2순위: 희망 직업 키워드 매칭 → 90
+    job = profile.get("dream_job", "").strip().replace(" ", "")
+    if job:
+        kw_all = course.get("kw", []) + [course_name]
+        if any(job in kw or kw in job for kw in kw_all):
+            return 90
+
+    # 3순위: track 태그만 겹치는 과목 → 70 (기존 100에서 하향)
+    p_tracks_str = " ".join(profile["career_tracks"])
+    for t in course["tracks"]:
+        if t in p_tracks_str:
+            return 70
+
     return 0
 
 def score_affinity(course, profile):
