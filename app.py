@@ -22,6 +22,7 @@ st.markdown("""
     .badge-eval-rel { background: #fef3c7; color: #92400e; }
     .badge-eval-abs { background: #ede9fe; color: #6d28d9; }
     .badge-track { background: #fce7f3; color: #9d174d; }
+    .badge-univ { background: #dbeafe; color: #1e40af; font-size: 0.75rem; }
     .combo-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.2rem; margin-bottom: 1rem; }
     .combo-title { font-size: 1.1rem; font-weight: 700; color: #1a365d; margin-bottom: 0.6rem; }
     .combo-sem { font-weight: 600; color: #0f3460; margin: 0.6rem 0 0.3rem; font-size: 0.95rem; }
@@ -37,11 +38,16 @@ st.markdown("""
     .ai-score.low { color: #9ca3af; }
     .ai-reason { font-size: 0.82rem; color: #475569; line-height: 1.6; margin: 0.3rem 0; }
     .ai-warning { font-size: 0.82rem; color: #dc2626; line-height: 1.6; }
+    .ai-univ-note { font-size: 0.82rem; color: #1e40af; background: #eff6ff; border-radius: 6px; padding: 0.5rem 0.8rem; margin-top: 0.4rem; line-height: 1.55; }
     .score-bar-bg { background: #e5e7eb; border-radius: 6px; height: 8px; width: 100%; }
     .score-bar-fill { border-radius: 6px; height: 8px; }
     .score-bar-fill.high { background: linear-gradient(90deg, #059669, #34d399); }
     .score-bar-fill.mid { background: linear-gradient(90deg, #d97706, #fbbf24); }
     .score-bar-fill.low { background: linear-gradient(90deg, #9ca3af, #d1d5db); }
+    .univ-guide-box { background: #f0f9ff; border: 1px solid #bae6fd; border-left: 5px solid #0284c7; border-radius: 10px; padding: 1rem 1.3rem; margin-bottom: 1.2rem; }
+    .univ-guide-box .guide-title { font-size: 1rem; font-weight: 700; color: #0c4a6e; margin-bottom: 0.4rem; }
+    .univ-guide-box .guide-prereq { font-size: 0.88rem; color: #0369a1; line-height: 1.6; margin-bottom: 0.3rem; }
+    .univ-guide-box .guide-3rd { font-size: 0.88rem; color: #334155; line-height: 1.6; }
     .block-container {
     max-width: 1200px;
     padding-left: 2rem;
@@ -55,37 +61,50 @@ st.markdown("""
 # ============================================================
 COURSES = {
     "정치": {"sem":"3-1","grp":"택3","cr":3,"eval":"5등급 상대평가","desc":"민주주의의 원리, 정치 과정, 선거 제도, 지방자치 등 정치 현상 전반을 탐구합니다.","tracks":["인문사회","법·정치","행정"],"kw":["정치","민주주의","선거","국회","시민","공무원","행정","외교"],
-        "aff":{"국어":0.4,"수학":0.0,"영어":0.1,"과학":0.0,"사회":0.9},"diff":3,"mem":0.5,"und":0.4,"pra":0.1,"wl":3,"gc":"보통","rmg":{"사회":3}},
+        "aff":{"국어":0.4,"수학":0.0,"영어":0.1,"과학":0.0,"사회":0.9},"diff":3,"mem":0.5,"und":0.4,"pra":0.1,"wl":3,"gc":"보통","rmg":{"사회":3},
+        "univ_note":"법·정치·행정 계열 지원 시 사회 교과 심화 이수를 보여주는 핵심 과목이에요."},
     "법과 사회": {"sem":"3-1","grp":"택3","cr":3,"eval":"5등급 상대평가","desc":"법의 기본 원리, 헌법, 민법, 형법 등 생활 속 법률 지식을 학습합니다.","tracks":["법·정치","인문사회","행정"],"kw":["법","변호사","판사","검사","법학","헌법","인권","로스쿨"],
-        "aff":{"국어":0.5,"수학":0.0,"영어":0.1,"과학":0.0,"사회":0.8},"diff":3,"mem":0.5,"und":0.4,"pra":0.1,"wl":3,"gc":"보통","rmg":{"사회":3}},
+        "aff":{"국어":0.5,"수학":0.0,"영어":0.1,"과학":0.0,"사회":0.8},"diff":3,"mem":0.5,"und":0.4,"pra":0.1,"wl":3,"gc":"보통","rmg":{"사회":3},
+        "univ_note":"법학·로스쿨 진학을 고려한다면 사회 교과 이수 깊이를 보여주는 중요한 과목이에요."},
     "금융과 경제 생활": {"sem":"3-1","grp":"택3","cr":3,"eval":"절대평가","desc":"금융 시장, 자산 관리, 신용, 투자 등 실생활 경제·금융 지식을 배웁니다.","tracks":["상경계","경제금융"],"kw":["경제","금융","주식","투자","은행","회계","경영","세무"],
-        "aff":{"국어":0.2,"수학":0.5,"영어":0.1,"과학":0.0,"사회":0.7},"diff":3,"mem":0.3,"und":0.5,"pra":0.2,"wl":3,"gc":"낮음","rmg":{"사회":3}},
+        "aff":{"국어":0.2,"수학":0.5,"영어":0.1,"과학":0.0,"사회":0.7},"diff":3,"mem":0.3,"und":0.5,"pra":0.2,"wl":3,"gc":"낮음","rmg":{"사회":3},
+        "univ_note":"상경계열 관심자에게 진로 탐색용으로 좋아요. 절대평가라 등급 부담 없이 도전할 수 있어요."},
     "윤리문제 탐구": {"sem":"3-1","grp":"택3","cr":3,"eval":"절대평가","desc":"생명윤리, 환경윤리, 정보윤리 등 현대 사회의 윤리적 쟁점을 다양한 관점에서 탐구합니다.","tracks":["인문사회","철학윤리","교육"],"kw":["윤리","철학","도덕","생명윤리","AI윤리","인권","정의"],
         "aff":{"국어":0.5,"수학":0.0,"영어":0.1,"과학":0.1,"사회":0.7},"diff":3,"mem":0.3,"und":0.6,"pra":0.1,"wl":3,"gc":"낮음","rmg":{"사회":3}},
     "도시의 미래 탐구": {"sem":"3-1","grp":"택3","cr":3,"eval":"5등급 상대평가","desc":"도시의 형성과 변화, 도시 문제, 지속가능한 도시 개발 등을 탐구합니다.","tracks":["인문사회","환경도시","건축"],"kw":["도시","건축","도시계획","부동산","스마트시티","교통","환경","지리"],
-        "aff":{"국어":0.2,"수학":0.1,"영어":0.1,"과학":0.3,"사회":0.7},"diff":2,"mem":0.3,"und":0.5,"pra":0.2,"wl":2,"gc":"보통","rmg":{"사회":3}},
+        "aff":{"국어":0.2,"수학":0.1,"영어":0.1,"과학":0.3,"사회":0.7},"diff":2,"mem":0.3,"und":0.5,"pra":0.2,"wl":2,"gc":"보통","rmg":{"사회":3},
+        "univ_note":"도시계획·건축·환경공학 계열에서 사회+과학 융합적 관심을 보여줄 수 있어요."},
     "고급 물리학": {"sem":"3-1","grp":"택3","cr":3,"eval":"5등급 상대평가","desc":"역학, 전자기학, 양자역학 등 물리학의 심화 내용을 다룹니다.","tracks":["이공계","자연과학","의약계"],"kw":["물리","역학","전자기","양자","반도체","우주","공학","기계","전기전자","항공"],
-        "aff":{"국어":0.1,"수학":0.9,"영어":0.1,"과학":0.9,"사회":0.0},"diff":5,"mem":0.2,"und":0.7,"pra":0.1,"wl":5,"gc":"높음","rmg":{"수학":2,"과학":2}},
+        "aff":{"국어":0.1,"수학":0.9,"영어":0.1,"과학":0.9,"사회":0.0},"diff":5,"mem":0.2,"und":0.7,"pra":0.1,"wl":5,"gc":"높음","rmg":{"수학":2,"과학":2},
+        "univ_note":"공학계열 지원 시, 2학년 '역학과 에너지/전자기와 양자' 위에 이 과목까지 이수하면 전공 심화 의지를 어필할 수 있어요."},
     "고급 화학": {"sem":"3-1","grp":"택3","cr":3,"eval":"5등급 상대평가","desc":"화학 결합, 반응 속도, 화학 평형 등 화학의 심화 개념을 학습합니다.","tracks":["이공계","자연과학","의약계"],"kw":["화학","약학","화공","신소재","바이오","제약","화학공학"],
-        "aff":{"국어":0.1,"수학":0.7,"영어":0.1,"과학":0.9,"사회":0.0},"diff":5,"mem":0.3,"und":0.6,"pra":0.1,"wl":5,"gc":"높음","rmg":{"수학":2,"과학":2}},
+        "aff":{"국어":0.1,"수학":0.7,"영어":0.1,"과학":0.9,"사회":0.0},"diff":5,"mem":0.3,"und":0.6,"pra":0.1,"wl":5,"gc":"높음","rmg":{"수학":2,"과학":2},
+        "univ_note":"약학·화공·신소재 계열 지원 시, 2학년 '물질과 에너지/화학반응의 세계' 이수 후 이 과목으로 심화하면 좋아요."},
     "고급 생명과학": {"sem":"3-1","grp":"택3","cr":3,"eval":"5등급 상대평가","desc":"세포생물학, 유전공학, 생태학 등 생명과학의 심화 내용을 다룹니다.","tracks":["의약계","자연과학","이공계"],"kw":["생명과학","의대","약대","간호","생명공학","유전","바이오","수의","한의"],
-        "aff":{"국어":0.1,"수학":0.5,"영어":0.1,"과학":0.9,"사회":0.0},"diff":5,"mem":0.4,"und":0.5,"pra":0.1,"wl":5,"gc":"높음","rmg":{"과학":3}},
+        "aff":{"국어":0.1,"수학":0.5,"영어":0.1,"과학":0.9,"사회":0.0},"diff":5,"mem":0.4,"und":0.5,"pra":0.1,"wl":5,"gc":"높음","rmg":{"과학":3},
+        "univ_note":"의약계 지원자는 2학년 '세포와 물질대사/생물의 유전' + 3학년 이 과목으로 과학 이수 깊이를 보여주세요."},
     "물리학 실험": {"sem":"3-1","grp":"택3","cr":3,"eval":"5등급 상대평가","desc":"물리학 개념을 실험을 통해 직접 확인하고 탐구합니다.","tracks":["이공계","자연과학"],"kw":["물리","실험","공학","연구","반도체","전기전자"],
-        "aff":{"국어":0.0,"수학":0.6,"영어":0.1,"과학":0.8,"사회":0.0},"diff":3,"mem":0.1,"und":0.4,"pra":0.5,"wl":3,"gc":"보통","rmg":{"과학":3}},
+        "aff":{"국어":0.0,"수학":0.6,"영어":0.1,"과학":0.8,"사회":0.0},"diff":3,"mem":0.1,"und":0.4,"pra":0.5,"wl":3,"gc":"보통","rmg":{"과학":3},
+        "univ_note":"이론+실험 병행 이수는 이공계 학종에서 탐구 역량을 보여주는 좋은 조합이에요."},
     "지구과학 실험": {"sem":"3-1","grp":"택3","cr":3,"eval":"5등급 상대평가","desc":"지질, 기상, 천문 등 지구과학 분야의 실험·관측 활동을 수행합니다.","tracks":["자연과학","이공계","환경도시"],"kw":["지구과학","기상","천문","지질","해양","환경","기후","우주"],
         "aff":{"국어":0.0,"수학":0.3,"영어":0.1,"과학":0.8,"사회":0.1},"diff":2,"mem":0.2,"und":0.3,"pra":0.5,"wl":2,"gc":"보통","rmg":{"과학":3}},
     "일본 문화": {"sem":"3-1","grp":"택1","cr":3,"eval":"5등급 상대평가","desc":"일본의 사회, 문화, 생활양식 등을 폭넓게 이해합니다.","tracks":["어문계","국제외교"],"kw":["일본","일본어","일본문화","통역","번역","관광","무역"],
-        "aff":{"국어":0.2,"수학":0.0,"영어":0.2,"과학":0.0,"사회":0.5},"diff":2,"mem":0.4,"und":0.4,"pra":0.2,"wl":2,"gc":"보통","rmg":{}},
+        "aff":{"국어":0.2,"수학":0.0,"영어":0.2,"과학":0.0,"사회":0.5},"diff":2,"mem":0.4,"und":0.4,"pra":0.2,"wl":2,"gc":"보통","rmg":{},
+        "univ_note":"서울대 인문계열은 제2외국어/한문 1과목 이상 이수를 권장하고 있어요."},
     "중국 문화": {"sem":"3-1","grp":"택1","cr":3,"eval":"5등급 상대평가","desc":"중국의 사회, 문화, 역사 등을 폭넓게 이해합니다.","tracks":["어문계","국제외교"],"kw":["중국","중국어","중국문화","통역","번역","무역"],
-        "aff":{"국어":0.2,"수학":0.0,"영어":0.2,"과학":0.0,"사회":0.5},"diff":2,"mem":0.4,"und":0.4,"pra":0.2,"wl":2,"gc":"보통","rmg":{}},
+        "aff":{"국어":0.2,"수학":0.0,"영어":0.2,"과학":0.0,"사회":0.5},"diff":2,"mem":0.4,"und":0.4,"pra":0.2,"wl":2,"gc":"보통","rmg":{},
+        "univ_note":"서울대 인문계열은 제2외국어/한문 1과목 이상 이수를 권장하고 있어요."},
     "교육의 이해": {"sem":"3-1","grp":"택1","cr":3,"eval":"P/F","desc":"교육의 개념, 목적, 역사, 심리학적 기초 등 교육학 전반을 배웁니다.","tracks":["교육","인문사회"],"kw":["교육","교사","사범대","교직","유아교육","특수교육","상담"],
-        "aff":{"국어":0.5,"수학":0.1,"영어":0.2,"과학":0.1,"사회":0.6},"diff":3,"mem":0.4,"und":0.5,"pra":0.1,"wl":3,"gc":"낮음","rmg":{}},
+        "aff":{"국어":0.5,"수학":0.1,"영어":0.2,"과학":0.1,"사회":0.6},"diff":3,"mem":0.4,"und":0.5,"pra":0.1,"wl":3,"gc":"낮음","rmg":{},
+        "univ_note":"사범대·교직 이수를 고려한다면 교육학 관련 과목 이수 이력이 진로 일관성을 보여줘요."},
     "인간과 심리": {"sem":"3-1","grp":"택1","cr":3,"eval":"P/F","desc":"인간의 행동과 정신 과정을 과학적으로 탐구합니다.","tracks":["인문사회","교육","의약계"],"kw":["심리","상담","심리학","정신건강","사회복지","임상심리","범죄심리","광고"],
         "aff":{"국어":0.3,"수학":0.1,"영어":0.2,"과학":0.3,"사회":0.6},"diff":3,"mem":0.3,"und":0.6,"pra":0.1,"wl":3,"gc":"낮음","rmg":{}},
     "보건": {"sem":"3-1","grp":"택1","cr":3,"eval":"P/F","desc":"건강 증진, 질병 예방, 응급처치 등 보건·건강 관련 지식을 배웁니다.","tracks":["의약계","보건간호"],"kw":["보건","간호","건강","의료","응급처치","공중보건","영양"],
-        "aff":{"국어":0.1,"수학":0.1,"영어":0.1,"과학":0.7,"사회":0.2},"diff":2,"mem":0.5,"und":0.4,"pra":0.1,"wl":2,"gc":"낮음","rmg":{}},
+        "aff":{"국어":0.1,"수학":0.1,"영어":0.1,"과학":0.7,"사회":0.2},"diff":2,"mem":0.5,"und":0.4,"pra":0.1,"wl":2,"gc":"낮음","rmg":{},
+        "univ_note":"보건·간호 계열 지원 시 진로 관심을 직접적으로 보여줄 수 있는 과목이에요."},
     "데이터 과학": {"sem":"3-1","grp":"택1","cr":3,"eval":"5등급 상대평가","desc":"데이터 수집, 분석, 시각화의 기초를 배웁니다. 프로그래밍과 통계를 결합한 과목입니다.","tracks":["이공계","상경계","IT"],"kw":["데이터","프로그래밍","코딩","AI","인공지능","통계","빅데이터","컴퓨터","IT","소프트웨어"],
-        "aff":{"국어":0.0,"수학":0.8,"영어":0.2,"과학":0.3,"사회":0.0},"diff":3,"mem":0.1,"und":0.4,"pra":0.5,"wl":3,"gc":"보통","rmg":{"수학":3}},
+        "aff":{"국어":0.0,"수학":0.8,"영어":0.2,"과학":0.3,"사회":0.0},"diff":3,"mem":0.1,"und":0.4,"pra":0.5,"wl":3,"gc":"보통","rmg":{"수학":3},
+        "univ_note":"IT·AI·데이터 분야 지원 시 프로그래밍+통계 역량을 보여주는 차별화 과목이에요."},
     "화법과 언어": {"sem":"3-1","grp":"택4","cr":3,"eval":"5등급 상대평가","desc":"효과적인 말하기·듣기 능력과 국어 문법 지식을 심화 학습합니다.","tracks":["인문사회","어문계","교육","법·정치"],"kw":["국어","문법","말하기","토론","언어학","국문학","아나운서","기자"],
         "aff":{"국어":0.9,"수학":0.0,"영어":0.1,"과학":0.0,"사회":0.2},"diff":3,"mem":0.4,"und":0.5,"pra":0.1,"wl":3,"gc":"보통","rmg":{"국어":3}},
     "언어생활 탐구": {"sem":"3-1","grp":"택4","cr":3,"eval":"5등급 상대평가","desc":"일상에서의 언어 사용 현상을 탐구합니다. 매체 언어, 방언, 언어 변화 등을 다룹니다.","tracks":["인문사회","어문계"],"kw":["국어","언어","매체","미디어","소통","언어학","국문학"],
@@ -93,11 +112,14 @@ COURSES = {
     "문학 감상과 비평": {"sem":"3-1","grp":"택4","cr":3,"eval":"5등급 상대평가","desc":"다양한 문학 작품을 감상하고 비평하는 역량을 기릅니다.","tracks":["인문사회","어문계","교육"],"kw":["문학","소설","시","비평","국문학","작가","창작","출판","인문학"],
         "aff":{"국어":0.9,"수학":0.0,"영어":0.1,"과학":0.0,"사회":0.2},"diff":3,"mem":0.3,"und":0.5,"pra":0.2,"wl":3,"gc":"보통","rmg":{"국어":3}},
     "경제 수학": {"sem":"3-1","grp":"택4","cr":3,"eval":"5등급 상대평가","desc":"수학적 개념을 경제·경영 분야에 적용하는 방법을 학습합니다.","tracks":["상경계","경제금융"],"kw":["경제","경영","수학","금융","회계","통계","보험수리"],
-        "aff":{"국어":0.1,"수학":0.9,"영어":0.1,"과학":0.0,"사회":0.4},"diff":3,"mem":0.2,"und":0.6,"pra":0.2,"wl":3,"gc":"보통","rmg":{"수학":2}},
+        "aff":{"국어":0.1,"수학":0.9,"영어":0.1,"과학":0.0,"사회":0.4},"diff":3,"mem":0.2,"und":0.6,"pra":0.2,"wl":3,"gc":"보통","rmg":{"수학":2},
+        "univ_note":"경희대 등은 수학 18학점·5과목 이상 이수 시 가산점을 부여해요. 수학 과목 수 채우기에도 도움!"},
     "고급 대수": {"sem":"3-1","grp":"택4","cr":3,"eval":"5등급 상대평가","desc":"행렬, 벡터, 일차변환 등 대수학의 심화 내용을 다룹니다.","tracks":["이공계","자연과학"],"kw":["수학","대수","행렬","공학","수학과","물리","컴퓨터과학"],
-        "aff":{"국어":0.0,"수학":1.0,"영어":0.1,"과학":0.3,"사회":0.0},"diff":5,"mem":0.2,"und":0.7,"pra":0.1,"wl":5,"gc":"높음","rmg":{"수학":2}},
+        "aff":{"국어":0.0,"수학":1.0,"영어":0.1,"과학":0.3,"사회":0.0},"diff":5,"mem":0.2,"und":0.7,"pra":0.1,"wl":5,"gc":"높음","rmg":{"수학":2},
+        "univ_note":"이공계 지원 시 '고급 미적분'과 함께 이수하면 수학 심화 역량을 강하게 어필할 수 있어요."},
     "고급 미적분": {"sem":"3-1","grp":"택4","cr":3,"eval":"5등급 상대평가","desc":"미적분학의 심화 내용(급수, 다변수 함수 등)을 학습합니다.","tracks":["이공계","자연과학","의약계"],"kw":["수학","미적분","공학","물리","의대","자연과학"],
-        "aff":{"국어":0.0,"수학":1.0,"영어":0.1,"과학":0.3,"사회":0.0},"diff":5,"mem":0.2,"und":0.7,"pra":0.1,"wl":5,"gc":"높음","rmg":{"수학":2}},
+        "aff":{"국어":0.0,"수학":1.0,"영어":0.1,"과학":0.3,"사회":0.0},"diff":5,"mem":0.2,"und":0.7,"pra":0.1,"wl":5,"gc":"높음","rmg":{"수학":2},
+        "univ_note":"2학년 '미적분Ⅱ' 위에 이 과목까지 이수하면 이공·의약계에서 수학 역량을 확실히 보여줄 수 있어요."},
     "영어독해와 작문": {"sem":"3-1","grp":"택4","cr":3,"eval":"5등급 상대평가","desc":"영어 지문 독해력과 영작문 능력을 심화합니다.","tracks":["어문계","국제외교","인문사회"],"kw":["영어","독해","작문","영문학","통역","번역","유학","국제"],
         "aff":{"국어":0.2,"수학":0.0,"영어":0.9,"과학":0.0,"사회":0.1},"diff":3,"mem":0.3,"und":0.4,"pra":0.3,"wl":3,"gc":"보통","rmg":{"영어":3}},
     "심화 영어": {"sem":"3-1","grp":"택4","cr":3,"eval":"5등급 상대평가","desc":"고급 수준의 영어 읽기·쓰기·말하기·듣기를 통합적으로 학습합니다.","tracks":["어문계","국제외교"],"kw":["영어","영문학","유학","해외대학","통역","번역","외교","국제기구"],
@@ -117,11 +139,14 @@ COURSES = {
     "여행지리": {"sem":"3-2","grp":"택3","cr":3,"eval":"절대평가","desc":"세계 여러 지역의 자연환경과 문화를 여행의 관점에서 탐구합니다.","tracks":["인문사회","관광"],"kw":["여행","지리","관광","문화","세계지리","호텔","항공"],
         "aff":{"국어":0.2,"수학":0.0,"영어":0.2,"과학":0.1,"사회":0.7},"diff":1,"mem":0.4,"und":0.4,"pra":0.2,"wl":1,"gc":"낮음","rmg":{}},
     "국제 관계의 이해": {"sem":"3-2","grp":"택3","cr":3,"eval":"5등급 상대평가","desc":"국제 사회의 구조, 외교, 국제기구, 국제법 등을 학습합니다.","tracks":["국제외교","법·정치","인문사회"],"kw":["국제관계","외교","UN","국제기구","국제법","안보","무역","글로벌"],
-        "aff":{"국어":0.3,"수학":0.0,"영어":0.4,"과학":0.0,"사회":0.8},"diff":3,"mem":0.4,"und":0.5,"pra":0.1,"wl":3,"gc":"보통","rmg":{"사회":3}},
+        "aff":{"국어":0.3,"수학":0.0,"영어":0.4,"과학":0.0,"사회":0.8},"diff":3,"mem":0.4,"und":0.5,"pra":0.1,"wl":3,"gc":"보통","rmg":{"사회":3},
+        "univ_note":"국제학·정치외교·글로벌 계열 지원 시 사회+영어 교과 심화를 동시에 보여줄 수 있어요."},
     "생명과학 실험": {"sem":"3-2","grp":"택3","cr":3,"eval":"5등급 상대평가","desc":"생명과학 개념을 실험을 통해 확인하고 탐구합니다.","tracks":["의약계","자연과학","이공계"],"kw":["생명과학","실험","의대","생명공학","바이오","연구","약학"],
-        "aff":{"국어":0.0,"수학":0.3,"영어":0.1,"과학":0.9,"사회":0.0},"diff":3,"mem":0.2,"und":0.3,"pra":0.5,"wl":3,"gc":"보","rmg":{"과학":3}},
+        "aff":{"국어":0.0,"수학":0.3,"영어":0.1,"과학":0.9,"사회":0.0},"diff":3,"mem":0.2,"und":0.3,"pra":0.5,"wl":3,"gc":"보통","rmg":{"과학":3},
+        "univ_note":"의약계 지원 시 '고급 생명과학' + '생명과학 실험' 조합이 이론+탐구 역량을 모두 보여줘요."},
     "화학 실험": {"sem":"3-2","grp":"택3","cr":3,"eval":"5등급 상대평가","desc":"화학 반응과 물질의 성질을 실험을 통해 탐구합니다.","tracks":["이공계","자연과학","의약계"],"kw":["화학","실험","화공","신소재","약학","연구"],
-        "aff":{"국어":0.0,"수학":0.4,"영어":0.1,"과학":0.9,"사회":0.0},"diff":3,"mem":0.2,"und":0.3,"pra":0.5,"wl":3,"gc":"보통","rmg":{"과학":3}},
+        "aff":{"국어":0.0,"수학":0.4,"영어":0.1,"과학":0.9,"사회":0.0},"diff":3,"mem":0.2,"und":0.3,"pra":0.5,"wl":3,"gc":"보통","rmg":{"과학":3},
+        "univ_note":"'고급 화학' + '화학 실험' 조합은 약학·화공·신소재 계열에서 강한 어필 포인트예요."},
     "기후변화와 환경생태": {"sem":"3-2","grp":"택3","cr":3,"eval":"절대평가","desc":"기후변화가 생태계에 미치는 영향과 환경 보전 방안을 과학적으로 탐구합니다.","tracks":["환경도시","자연과학"],"kw":["환경","생태","기후","보전","환경공학","탄소"],
         "aff":{"국어":0.1,"수학":0.1,"영어":0.1,"과학":0.7,"사회":0.4},"diff":2,"mem":0.3,"und":0.5,"pra":0.2,"wl":2,"gc":"낮음","rmg":{}},
     "과학의 역사와 문화": {"sem":"3-2","grp":"택3","cr":3,"eval":"절대평가","desc":"과학의 발전 과정과 사회·문화적 맥락을 탐구합니다.","tracks":["자연과학","인문사회"],"kw":["과학사","과학철학","융합","인문","과학기술"],
@@ -129,15 +154,18 @@ COURSES = {
     "융합과학 탐구": {"sem":"3-2","grp":"택3","cr":3,"eval":"절대평가","desc":"물리·화학·생명과학·지구과학의 경계를 넘어 융합적 주제를 탐구합니다.","tracks":["이공계","자연과학"],"kw":["융합","과학탐구","STEAM","연구","과학"],
         "aff":{"국어":0.1,"수학":0.4,"영어":0.1,"과학":0.8,"사회":0.0},"diff":3,"mem":0.2,"und":0.5,"pra":0.3,"wl":3,"gc":"낮음","rmg":{}},
     "심화 일본어": {"sem":"3-2","grp":"택1","cr":3,"eval":"5등급 상대평가","desc":"일본어의 읽기·쓰기·말하기·듣기를 심화 수준으로 학습합니다.","tracks":["어문계","국제외교"],"kw":["일본어","일본","통역","번역","무역","관광"],
-        "aff":{"국어":0.2,"수학":0.0,"영어":0.2,"과학":0.0,"사회":0.2},"diff":3,"mem":0.5,"und":0.3,"pra":0.2,"wl":3,"gc":"높음","rmg":{}},
+        "aff":{"국어":0.2,"수학":0.0,"영어":0.2,"과학":0.0,"사회":0.2},"diff":3,"mem":0.5,"und":0.3,"pra":0.2,"wl":3,"gc":"높음","rmg":{},
+        "univ_note":"서울대 인문계열 제2외국어 권장과목에 해당해요. 1학기 '일본 문화'와 연계하면 좋아요."},
     "심화 중국어": {"sem":"3-2","grp":"택1","cr":3,"eval":"5등급 상대평가","desc":"중국어의 읽기·쓰기·말하기·듣기를 심화 수준으로 학습합니다.","tracks":["어문계","국제외교"],"kw":["중국어","중국","통역","번역","무역","관광"],
-        "aff":{"국어":0.2,"수학":0.0,"영어":0.2,"과학":0.0,"사회":0.2},"diff":3,"mem":0.5,"und":0.3,"pra":0.2,"wl":3,"gc":"높음","rmg":{}},
+        "aff":{"국어":0.2,"수학":0.0,"영어":0.2,"과학":0.0,"사회":0.2},"diff":3,"mem":0.5,"und":0.3,"pra":0.2,"wl":3,"gc":"높음","rmg":{},
+        "univ_note":"서울대 인문계열 제2외국어 권장과목에 해당해요. 1학기 '중국 문화'와 연계하면 좋아요."},
     "생태와 환경": {"sem":"3-2","grp":"택1","cr":3,"eval":"P/F","desc":"생태계의 구조와 기능, 환경 문제, 지속가능한 발전 등을 배웁니다.","tracks":["환경도시","자연과학"],"kw":["환경","생태","지속가능","환경공학","조경","산림","해양"],
         "aff":{"국어":0.1,"수학":0.1,"영어":0.1,"과학":0.7,"사회":0.3},"diff":3,"mem":0.4,"und":0.5,"pra":0.1,"wl":3,"gc":"낮음","rmg":{}},
     "인간과 철학": {"sem":"3-2","grp":"택1","cr":3,"eval":"P/F","desc":"인간 존재와 삶의 의미에 대한 철학적 질문을 탐구합니다.","tracks":["인문사회","철학윤리","교육"],"kw":["철학","인문학","사상","윤리","논리","존재론"],
         "aff":{"국어":0.6,"수학":0.0,"영어":0.1,"과학":0.0,"사회":0.6},"diff":3,"mem":0.3,"und":0.6,"pra":0.1,"wl":3,"gc":"낮음","rmg":{}},
     "간호의 기초": {"sem":"3-2","grp":"택1","cr":3,"eval":"P/F","desc":"간호학의 기본 개념, 건강 사정, 기초 간호 기술 등을 배웁니다.","tracks":["보건간호","의약계"],"kw":["간호","간호사","보건","의료","병원","간호학과","응급"],
-        "aff":{"국어":0.1,"수학":0.1,"영어":0.1,"과학":0.7,"사회":0.1},"diff":3,"mem":0.4,"und":0.4,"pra":0.2,"wl":3,"gc":"낮음","rmg":{}},
+        "aff":{"국어":0.1,"수학":0.1,"영어":0.1,"과학":0.7,"사회":0.1},"diff":3,"mem":0.4,"und":0.4,"pra":0.2,"wl":3,"gc":"낮음","rmg":{},
+        "univ_note":"간호학과 지원 시 1학기 '보건' + 2학기 '간호의 기초' 조합이 진로 일관성을 보여줘요."},
     "생활과학 탐구": {"sem":"3-2","grp":"택1","cr":3,"eval":"5등급 상대평가","desc":"의·식·주 등 일상생활과 관련된 과학적 원리를 탐구합니다.","tracks":["자연과학","생활과학"],"kw":["생활과학","식품","영양","의류","소비자","가정","조리"],
         "aff":{"국어":0.1,"수학":0.1,"영어":0.0,"과학":0.5,"사회":0.3},"diff":1,"mem":0.3,"und":0.4,"pra":0.3,"wl":1,"gc":"보통","rmg":{}},
     "주제 탐구 독서": {"sem":"3-2","grp":"택4","cr":3,"eval":"5등급 상대평가","desc":"특정 주제에 대해 깊이 있는 독서와 탐구 활동을 수행합니다.","tracks":["인문사회","어문계","교육"],"kw":["독서","탐구","논문","인문학","비판적사고","학술","연구"],
@@ -145,7 +173,8 @@ COURSES = {
     "독서 토론과 글쓰기": {"sem":"3-2","grp":"택4","cr":3,"eval":"5등급 상대평가","desc":"독서를 바탕으로 토론하고 논리적 글쓰기를 연습합니다.","tracks":["인문사회","어문계","법·정치","교육"],"kw":["독서","토론","글쓰기","논술","에세이","국어","기자","작가"],
         "aff":{"국어":0.9,"수학":0.0,"영어":0.1,"과학":0.0,"사회":0.3},"diff":3,"mem":0.2,"und":0.5,"pra":0.3,"wl":3,"gc":"보통","rmg":{"국어":3}},
     "수학과제 탐구": {"sem":"3-2","grp":"택4","cr":3,"eval":"5등급 상대평가","desc":"수학적 주제를 선정하여 자기주도적으로 탐구하고 발표합니다.","tracks":["이공계","자연과학"],"kw":["수학","탐구","연구","수학과","수리과학","프로젝트"],
-        "aff":{"국어":0.1,"수학":0.9,"영어":0.1,"과학":0.2,"사회":0.0},"diff":3,"mem":0.1,"und":0.5,"pra":0.4,"wl":3,"gc":"보통","rmg":{"수학":3}},
+        "aff":{"국어":0.1,"수학":0.9,"영어":0.1,"과학":0.2,"사회":0.0},"diff":3,"mem":0.1,"und":0.5,"pra":0.4,"wl":3,"gc":"보통","rmg":{"수학":3},
+        "univ_note":"수학 자기주도 탐구 경험은 이공·자연과학 학종에서 탐구 역량의 강력한 근거가 돼요."},
     "수학과 문화": {"sem":"3-2","grp":"택4","cr":3,"eval":"5등급 상대평가","desc":"수학의 역사, 예술과의 관계, 실생활 속 수학 등을 탐구합니다.","tracks":["인문사회","교육"],"kw":["수학","수학사","문화","융합","인문수학"],
         "aff":{"국어":0.2,"수학":0.6,"영어":0.0,"과학":0.1,"사회":0.3},"diff":2,"mem":0.3,"und":0.5,"pra":0.2,"wl":2,"gc":"보통","rmg":{"수학":3}},
     "영어 발표와 토론": {"sem":"3-2","grp":"택4","cr":3,"eval":"5등급 상대평가","desc":"영어로 발표하고 토론하는 능력을 집중적으로 훈련합니다.","tracks":["어문계","국제외교"],"kw":["영어","발표","토론","스피킹","디베이트","국제","외교"],
@@ -156,6 +185,87 @@ COURSES = {
         "aff":{"국어":0.3,"수학":0.0,"영어":0.0,"과학":0.0,"사회":0.1},"diff":1,"mem":0.2,"und":0.4,"pra":0.4,"wl":1,"gc":"낮음","rmg":{}},
     "스포츠 경기 기술": {"sem":"3-2","grp":"택4","cr":3,"eval":"절대평가","desc":"다양한 스포츠 종목의 경기 기술을 체계적으로 학습하고 실습합니다.","tracks":["예체능"],"kw":["체육","스포츠","경기","운동","체육교육","코치"],
         "aff":{"국어":0.0,"수학":0.0,"영어":0.0,"과학":0.0,"사회":0.0},"diff":1,"mem":0.0,"und":0.1,"pra":0.9,"wl":1,"gc":"낮음","rmg":{}},
+}
+
+# ============================================================
+# 진로별 대입 안내 (track별 2학년 전제 + 3학년 포인트)
+# ============================================================
+TRACK_UNIV_GUIDE = {
+    "이공계 (공학·반도체·전기전자·기계)": {
+        "icon": "⚙️",
+        "prereq": "서울대·고려대 등은 2학년에서 <b>기하 + 미적분Ⅱ</b>, 과학 진로선택(역학과 에너지, 전자기와 양자 등) <b>2~3과목 이상</b> 이수를 권장합니다.",
+        "third": "3학년에서는 <b>고급 물리학, 고급 미적분, 물리학 실험</b> 등으로 심화 이수를 보여주세요. 경희대는 수학 5과목·과학 6과목 이상 이수 시 가산점도 있어요.",
+    },
+    "IT·컴퓨터·AI": {
+        "icon": "💻",
+        "prereq": "이공계와 동일하게 <b>기하 + 미적분Ⅱ</b> 이수가 권장돼요. 물리학 진로선택 이수도 도움이 됩니다.",
+        "third": "3학년에서는 <b>데이터 과학, 고급 대수, 고급 미적분</b>을 통해 수학+정보 역량을 동시에 보여주세요.",
+    },
+    "의약계 (의대·치대·한의대·약대·수의대)": {
+        "icon": "🏥",
+        "prereq": "서울대 의대는 <b>기하 + 미적분Ⅱ</b> + <b>세포와 물질대사, 생물의 유전 포함</b> 과학 진로선택 3과목 이상을 권장합니다.",
+        "third": "3학년에서는 <b>고급 생명과학 + 생명과학 실험</b>, <b>고급 화학 + 화학 실험</b> 조합으로 이론+탐구 역량을 모두 보여주세요.",
+    },
+    "보건·간호": {
+        "icon": "💊",
+        "prereq": "간호학과 등 보건의료 계열은 <b>생명과학·화학</b> 관련 진로선택 3과목 이상 이수를 권장하는 대학이 많아요.",
+        "third": "3학년에서는 <b>고급 생명과학, 보건, 간호의 기초</b>를 통해 진로 관심과 과학 심화를 함께 보여주세요.",
+    },
+    "자연과학 (수학·물리·화학·생명·지구과학)": {
+        "icon": "🔬",
+        "prereq": "자연과학대 지원 시 <b>기하 + 미적분Ⅱ</b> + 해당 분야 과학 진로선택 이수가 기본이에요.",
+        "third": "3학년에서는 <b>고급 물리학/화학/생명과학 + 실험 과목 + 수학과제 탐구</b>로 깊이 있는 이수 이력을 만들어주세요.",
+    },
+    "인문·사회 (인문학·사회학·심리학)": {
+        "icon": "📖",
+        "prereq": "인문계열은 대부분 특정 권장과목을 지정하지 않지만, <b>서울대는 제2외국어/한문 1과목 이상</b> 이수를 권장해요.",
+        "third": "3학년에서는 <b>사회 교과 다양한 심화 과목</b> + 국어·영어 교과 심화로 폭넓은 인문학적 소양을 보여주세요.",
+    },
+    "법·정치·행정": {
+        "icon": "⚖️",
+        "prereq": "인문계열과 동일하게 특정 과목 지정은 적지만, <b>서울대 제2외국어/한문</b> 권장 사항은 확인하세요.",
+        "third": "3학년에서 <b>정치, 법과 사회, 국제 관계의 이해</b> 등 사회 교과 심화 과목을 집중적으로 이수하는 게 좋아요.",
+    },
+    "상경계 (경영·경제·금융·회계)": {
+        "icon": "📊",
+        "prereq": "부산대 경제학부 등은 <b>확률과 통계, 미적분Ⅰ, 미적분Ⅱ 중 1과목 이상</b> 이수를 권장합니다.",
+        "third": "3학년에서는 <b>경제 수학, 금융과 경제 생활, 데이터 과학</b>으로 수학+경제 융합 역량을 보여주세요.",
+    },
+    "교육 (사범대·교직)": {
+        "icon": "🎓",
+        "prereq": "사범대는 계열에 따라 달라요. 수학교육은 수학 심화, 과학교육은 과학 심화가 필요합니다.",
+        "third": "3학년에서 <b>교육의 이해</b>로 교육학 관심을 보여주고, 전공 교과(국어/영어/수학/과학 등) 심화 과목을 함께 이수하세요.",
+    },
+    "어문·외국어 (영문·국문·통번역)": {
+        "icon": "🌐",
+        "prereq": "<b>서울대 인문계열 제2외국어/한문 1과목 이상</b> 이수 권장. 영어 교과는 위계에 맞게 심화해주세요.",
+        "third": "3학년에서 <b>심화 영어, 영어 발표와 토론</b> 등 영어 교과를 깊이 있게, <b>일본/중국 문화 → 심화 일본어/중국어</b>로 제2외국어도 챙기세요.",
+    },
+    "국제·외교 (국제학·외교·국제기구)": {
+        "icon": "🌍",
+        "prereq": "서울대 인문계열 <b>제2외국어/한문 1과목 이상</b> 권장. 사회·영어 교과 심화가 중요해요.",
+        "third": "3학년에서 <b>국제 관계의 이해, 심화 영어/중국어, 기후변화와 지속가능한 세계</b> 등으로 글로벌 이슈 관심을 보여주세요.",
+    },
+    "환경·도시·건축": {
+        "icon": "🏗️",
+        "prereq": "건축·환경공학은 이공계와 유사하게 <b>기하 + 미적분Ⅱ</b>, 물리·화학 진로선택 이수가 권장돼요.",
+        "third": "3학년에서 <b>도시의 미래 탐구, 기후변화와 환경생태</b> + 물리/화학 심화로 사회+과학 융합 시각을 보여주세요.",
+    },
+    "미디어·언론·광고": {
+        "icon": "📺",
+        "prereq": "인문계열 기준으로, 특정 권장과목 지정은 적어요. 국어·사회 교과 심화가 기본입니다.",
+        "third": "3학년에서 <b>미디어 영어, 화법과 언어, 사회문제 탐구</b> 등으로 미디어+사회 교과 연계를 보여주세요.",
+    },
+    "관광·호텔·항공": {
+        "icon": "✈️",
+        "prereq": "특정 권장과목 지정은 적지만, 외국어 교과 심화가 경쟁력이에요.",
+        "third": "3학년에서 <b>여행지리, 세계 문화와 영어, 심화 일본어/중국어</b>로 글로벌+관광 관심을 보여주세요.",
+    },
+    "예체능 (음악·체육·미술)": {
+        "icon": "🎨",
+        "prereq": "예체능 계열은 실기가 핵심이라 교과 이수 권장 사항이 별도로 없는 경우가 많아요.",
+        "third": "3학년에서 <b>음악연주와 창작/음악감상과 비평, 스포츠 생활2/스포츠 경기 기술</b> 등 실기 관련 과목 + 교양 과목을 균형 있게 이수하세요.",
+    },
 }
 
 # ============================================================
@@ -301,22 +411,15 @@ SUBJECTS = ["국어", "수학", "영어", "과학", "사회"]
 def score_career(course_name, course, profile):
     if not profile["career_tracks"]:
         return 50
-        
-    # 1. 과목에 설정된 자체 태그 검사
     p_tracks_str = " ".join(profile["career_tracks"])
     for t in course["tracks"]:
         if t in p_tracks_str:
             return 100
-            
-    # 🚨 [새로 추가된 로직] 희망 직업(dream_job) 키워드 텍스트 직접 매칭!
     job = profile.get("dream_job", "").strip().replace(" ", "")
     if job:
         kw_all = course.get("kw", []) + [course_name]
-        # 예: 과목 키워드("영어")가 희망 직업("영어교사")에 들어있으면 무조건 진로 만점!
         if any(job in kw or kw in job for kw in kw_all):
             return 100
-
-    # 3. TRACK_COMBOS 추천 목록에 들어있는 과목인지 검사
     for trk in profile["career_tracks"]:
         if trk in TRACK_COMBOS:
             combo = TRACK_COMBOS[trk]
@@ -327,7 +430,6 @@ def score_career(course_name, course, profile):
                         if course_name in items: return 100
                     else:
                         if course_name == items: return 100
-                        
     return 0
 
 def score_affinity(course, profile):
@@ -341,9 +443,6 @@ def score_affinity(course, profile):
         like_bonus = 0.3 if subj in profile["likes"] else 0
         dislike_pen = -0.4 if subj in profile["dislikes"] else 0
         score += (grade_norm + like_bonus + dislike_pen) * weight
-        
-    # 🚨 수정 포인트 1: 국영수과사 반영이 0인 체육 같은 과목이 
-    # 기본 50점을 받아 억울하게 점수가 깎이는 걸 막기 위해 기본점수를 80점으로 상향!
     return max(0, min(100, (score / total_w) * 100)) if total_w else 80
 
 def score_learning_style(course, profile):
@@ -387,18 +486,13 @@ def calc_total_score(course_name, course, profile):
         "grade": score_grade_comp(course, profile),
     }
     total = sum(scores[k] * weights[k] for k in weights)
-    
     if profile["career_tracks"] and scores["career"] == 0:
         total *= 0.7  
-        
     job = profile.get("dream_job", "").strip().replace(" ", "")
     if job:
         kw_all = course.get("kw", []) + [course_name]
         if any(kw in job or job in kw for kw in kw_all):
-            # 🚨 수정 포인트 2: 희망 직업("체육")과 키워드("체육")가 겹치면 
-            # 가산점을 무려 +15점 줘서 음악, 미술을 제치고 압도적 1위를 하도록 세팅!
             total = min(100, total + 15) 
-            
     return round(total, 1), scores
 
 def generate_explanation(course_name, course, scores, profile):
@@ -420,7 +514,10 @@ def generate_explanation(course_name, course, scores, profile):
         reasons.append("원하는 공부 부담 수준과 잘 맞아요")
     if not reasons:
         reasons.append("전반적으로 균형 잡힌 선택이에요")
-        
+    # univ_note가 있고 진로 매칭이 되면 추천 이유에 포함
+    univ_note = course.get("univ_note", "")
+    if univ_note and scores["career"] >= 70:
+        reasons.append(f"🎓 {univ_note}")
     for subj, min_g in course.get("rmg", {}).items():
         student_g = profile["grades"].get(subj, 3)
         if student_g > min_g:
@@ -429,12 +526,10 @@ def generate_explanation(course_name, course, scores, profile):
         warnings.append("원하는 부담 수준보다 학습량이 많을 수 있어요")
     if course["diff"] >= 4 and scores["affinity"] < 50:
         warnings.append("난이도가 높은 과목이라 관련 기초 과목 성적을 확인해보세요")
-        
-    # 🚨 [추가된 로직] 경고 문구 추가
     if profile["career_tracks"] and scores["career"] == 0:
         warnings.append("선택하신 희망 진로 계열과 무관한 과목입니다. 단순 성적 관리가 목적이 아니라면 재고해보세요.")
-        
     return reasons, warnings
+
 # ============================================================
 # 렌더링 함수
 # ============================================================
@@ -443,12 +538,14 @@ def render_card(name, info, is_rec=False):
     ev_cls = "badge-eval-rel" if "상대" in info["eval"] else "badge-eval-abs"
     rec = '<span class="badge badge-rec">⭐ 추천</span> ' if is_rec else ""
     tracks = "".join(f'<span class="badge badge-track">{t}</span>' for t in info["tracks"])
-    
-    # 🚨 여기부터 들여쓰기 절대 금지! 🚨
+    univ_html = ""
+    if info.get("univ_note"):
+        univ_html = f'<div class="ai-univ-note">🎓 {info["univ_note"]}</div>'
     st.markdown(f"""<div class="{cls}">
 <div class="course-name">{rec}{name}</div>
 <div style="margin-bottom:0.4rem;"><span class="badge badge-group">{info["grp"]} · {info["cr"]}학점</span><span class="badge {ev_cls}">{info["eval"]}</span></div>
 <div class="course-desc">{info["desc"]}</div><div>{tracks}</div>
+{univ_html}
 </div>""", unsafe_allow_html=True)
 
 def render_group(sem_filter, grp, rec_names):
@@ -469,39 +566,25 @@ def render_combo_summary(combo):
                 grp_courses = {k: v for k, v in COURSES.items() if v["sem"] == sem_filter and v["grp"] == grp}
                 if not grp_courses:
                     continue
-                    
-                # 1. 점수순 정렬
                 sorted_courses = sorted(grp_courses.keys(), key=lambda x: all_scores[x]["total"], reverse=True)
                 pick_count = GRP_COUNT[grp]
-                
-                # 🚨 [추가된 로직] 동점자 처리를 위한 커트라인(문닫고 들어가는) 점수 확인
                 if len(sorted_courses) >= pick_count:
                     cut_off_score = all_scores[sorted_courses[pick_count - 1]]["total"]
                 else:
                     cut_off_score = -1
-
-                # 🚨 [추가된 로직] 커트라인 점수 이상인 과목은 모두 '상위 추천'으로, 미만은 '나머지'로 분리
                 top_courses = [c for c in sorted_courses if all_scores[c]["total"] >= cut_off_score]
                 remaining = [c for c in sorted_courses if all_scores[c]["total"] < cut_off_score]
-
                 st.markdown(f'<div class="group-title">📌 {grp} 그룹 — {pick_count}개 선택</div>', unsafe_allow_html=True)
-                
-                # 동점자 때문에 추천 개수가 늘어났다면 안내 문구도 센스있게 변경!
                 if len(top_courses) > pick_count:
                     st.caption(f"🏆 상위 추천 과목 (동점 포함 총 {len(top_courses)}개)")
                 else:
                     st.caption(f"🏆 상위 {pick_count}개 추천 과목")
-
-                # 상위 추천 과목 출력 (동점자 모두 포함)
                 for rank, cname in enumerate(top_courses, 1):
                     sc = all_scores[cname]
                     render_ai_card(rank, cname, COURSES[cname], sc["total"], sc["breakdown"], sc["reasons"], sc["warnings"], pick_count)
-
-                # 나머지 과목은 접어두기
                 if remaining:
                     with st.expander(f"나머지 {len(remaining)}개 과목 보기"):
                         for i, cname in enumerate(remaining):
-                            # 순위 번호가 이어서 나오도록 계산
                             rank = len(top_courses) + i + 1 
                             sc = all_scores[cname]
                             render_ai_card(rank, cname, COURSES[cname], sc["total"], sc["breakdown"], sc["reasons"], sc["warnings"], pick_count)
@@ -516,7 +599,6 @@ def get_rec_names(combo):
     return names
 
 def render_ai_card(rank, name, info, total_score, scores, reasons, warnings, pick_count):
-    # 🚨 3으로 고정되어 있던 부분을 pick_count로 변경!
     cls = "ai-card top" if rank <= pick_count else "ai-card"
     sc_cls = "high" if total_score >= 70 else ("mid" if total_score >= 50 else "low")
     ev_cls = "badge-eval-rel" if "상대" in info["eval"] else "badge-eval-abs"
@@ -524,8 +606,11 @@ def render_ai_card(rank, name, info, total_score, scores, reasons, warnings, pic
     reasons_html = "".join(f"<li>{r}</li>" for r in reasons)
     warnings_html = "".join(f"<li>⚠️ {w}</li>" for w in warnings)
     warn_block = f'<div class="ai-warning"><ul style="margin:0;padding-left:1.2rem;">{warnings_html}</ul></div>' if warnings else ""
-    
-    # 🚨 여기부터 들여쓰기 절대 금지! 🚨
+    # univ_note 표시 (추천이유에 이미 포함되어 있지 않은 경우에만 별도 표시)
+    univ_note = info.get("univ_note", "")
+    univ_block = ""
+    if univ_note and not any("🎓" in r for r in reasons):
+        univ_block = f'<div class="ai-univ-note">🎓 {univ_note}</div>'
     st.markdown(f"""<div class="{cls}">
 <div style="display:flex;align-items:center;margin-bottom:0.4rem;">
 <span class="ai-score {sc_cls}">{total_score}점</span>
@@ -542,10 +627,26 @@ def render_ai_card(rank, name, info, total_score, scores, reasons, warnings, pic
 <div class="course-desc">{info["desc"]}</div>
 <div class="ai-reason"><b>추천 이유:</b><ul style="margin:0.2rem 0 0;padding-left:1.2rem;">{reasons_html}</ul></div>
 {warn_block}
+{univ_block}
+</div>""", unsafe_allow_html=True)
+
+def render_univ_guide_boxes(career_tracks):
+    """선택된 진로 계열에 해당하는 대입 안내 박스를 표시"""
+    guides_shown = []
+    for trk in career_tracks:
+        if trk in TRACK_UNIV_GUIDE:
+            guides_shown.append((trk, TRACK_UNIV_GUIDE[trk]))
+    if not guides_shown:
+        return
+    for trk_name, guide in guides_shown[:3]:  # 최대 3개까지만 표시
+        st.markdown(f"""<div class="univ-guide-box">
+<div class="guide-title">{guide["icon"]} {trk_name} — 2028 대입 참고사항</div>
+<div class="guide-prereq">📌 <b>2학년 이수 확인:</b> {guide["prereq"]}</div>
+<div class="guide-3rd">💡 <b>3학년 포인트:</b> {guide["third"]}</div>
 </div>""", unsafe_allow_html=True)
 
 # ============================================================
-# 기본 세팅 (앱 최초 실행 시 빈 화면 방지)
+# 기본 세팅
 # ============================================================
 if "profile" not in st.session_state:
     st.session_state.profile = {
@@ -612,7 +713,6 @@ if submitted:
 st.markdown("""<div class="main-header"><h1>📚 삼괴고 3학년 선택과목 가이드</h1>
 <p>2025학년도 입학생 교육과정 편제 기준 · 진로별 추천 조합 & AI 맞춤 추천</p></div>""", unsafe_allow_html=True)
 
-# 🚨 메인 페이지 상단 안내/경고 문구 추가
 st.markdown("""
 <div style="background-color: #fffbeb; border: 1px solid #fef3c7; border-left: 6px solid #f59e0b; border-radius: 8px; padding: 1.2rem 1.5rem; margin-bottom: 2rem;">
     <div style="font-size: 1.15rem; font-weight: 700; color: #b45309; margin-bottom: 0.4rem;">
@@ -638,7 +738,6 @@ with tab1:
                 왼쪽 사이드바에서 <b>나의 프로필</b>을 설정하면<br>
                 나에게 딱 맞는 과목을 추천해 드립니다.</p></div>""", unsafe_allow_html=True)
     else:
-        # Profile summary banner
         strong_subjs = sorted(profile["grades"].items(), key=lambda x: x[1])[:2]
         strong_text = ", ".join(f"{s} {g}등급" for s, g in strong_subjs)
         track_text = ", ".join(profile["career_tracks"][:3]) if profile["career_tracks"] else "미선택"
@@ -650,6 +749,10 @@ with tab1:
             <p>📈 등급 중요도: <b>{"★" * profile["grade_sens"]}{"☆" * (5 - profile["grade_sens"])}</b> | 부담 수준: <b>{"▮" * profile["workload_pref"]}{"▯" * (5 - profile["workload_pref"])}</b></p>
         </div>""", unsafe_allow_html=True)
 
+        # 대입 안내 박스 표시
+        if profile["career_tracks"]:
+            render_univ_guide_boxes(profile["career_tracks"])
+
         # Calculate all scores
         all_scores = {}
         for name, info in COURSES.items():
@@ -657,42 +760,28 @@ with tab1:
             reasons, warnings = generate_explanation(name, info, breakdown, profile)
             all_scores[name] = {"total": total, "breakdown": breakdown, "reasons": reasons, "warnings": warnings}
 
-        # Display by semester and group
         for sem_label, sem_filter, _ in SEM_INFO:
             st.markdown(f'<div class="semester-title">{sem_label}</div>', unsafe_allow_html=True)
             for grp in GRP_ORDER:
                 grp_courses = {k: v for k, v in COURSES.items() if v["sem"] == sem_filter and v["grp"] == grp}
                 if not grp_courses:
                     continue
-                
-                # 1. 점수순 정렬
                 sorted_courses = sorted(grp_courses.keys(), key=lambda x: all_scores[x]["total"], reverse=True)
                 pick_count = GRP_COUNT[grp]
-                
-                # 🚨 동점자 처리를 위한 커트라인 점수 확인
                 if len(sorted_courses) >= pick_count:
                     cut_off_score = all_scores[sorted_courses[pick_count - 1]]["total"]
                 else:
                     cut_off_score = -1
-
-                # 커트라인 점수 이상인 과목은 모두 '상위 추천'으로, 미만은 '나머지'로 분리
                 top_courses = [c for c in sorted_courses if all_scores[c]["total"] >= cut_off_score]
                 remaining = [c for c in sorted_courses if all_scores[c]["total"] < cut_off_score]
-
                 st.markdown(f'<div class="group-title">📌 {grp} 그룹 — {pick_count}개 선택</div>', unsafe_allow_html=True)
-                
-                # 동점자 때문에 추천 개수가 늘어났다면 안내 문구 변경
                 if len(top_courses) > pick_count:
                     st.caption(f"🏆 상위 추천 과목 (동점 포함 총 {len(top_courses)}개)")
                 else:
                     st.caption(f"🏆 상위 {pick_count}개 추천 과목")
-
-                # 상위 추천 과목 출력 (동점자 모두 포함)
                 for rank, cname in enumerate(top_courses, 1):
                     sc = all_scores[cname]
                     render_ai_card(rank, cname, COURSES[cname], sc["total"], sc["breakdown"], sc["reasons"], sc["warnings"], pick_count)
-
-                # 나머지 과목은 접어두기
                 if remaining:
                     with st.expander(f"나머지 {len(remaining)}개 과목 보기"):
                         for i, cname in enumerate(remaining):
@@ -706,8 +795,26 @@ with tab2:
     combo = TRACK_COMBOS[sel]
     rec_names = get_rec_names(combo)
 
+    # 대입 안내 박스 (탭2에서도 표시)
+    if sel in TRACK_UNIV_GUIDE:
+        guide = TRACK_UNIV_GUIDE[sel]
+        st.markdown(f"""<div class="univ-guide-box">
+<div class="guide-title">{guide["icon"]} 2028 대입 참고사항</div>
+<div class="guide-prereq">📌 <b>2학년 이수 확인:</b> {guide["prereq"]}</div>
+<div class="guide-3rd">💡 <b>3학년 포인트:</b> {guide["third"]}</div>
+</div>""", unsafe_allow_html=True)
+
     st.markdown(f'<div class="combo-box"><div class="combo-title">🎯 {sel}</div><div class="course-desc" style="margin-bottom:0.8rem;">{combo["desc"]}</div>', unsafe_allow_html=True)
-    render_combo_summary(combo)
+    for sk in ["1학기", "2학기"]:
+        sem_data = combo[sk]
+        st.markdown(f'<div class="combo-sem">{"📘" if sk == "1학기" else "📗"} 3학년 {sk}</div>', unsafe_allow_html=True)
+        for grp in GRP_ORDER:
+            items = sem_data[grp]
+            if isinstance(items, list):
+                items_str = ", ".join(items)
+            else:
+                items_str = items
+            st.markdown(f'<div class="combo-item"><b>{grp}:</b> {items_str}</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown("---")
