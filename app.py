@@ -499,6 +499,22 @@ def calc_total_score(course_name, course, profile):
         kw_all = course.get("kw", []) + [course_name]
         if any(kw in job or job in kw for kw in kw_all):
             total = min(100, total + 15) 
+            # TRACK_COMBOS 추천 목록 순서에 따른 미세 가산점 (동점 방지)
+    combo_bonus = 0
+    for trk in profile.get("career_tracks", []):
+        if trk in TRACK_COMBOS:
+            combo = TRACK_COMBOS[trk]
+            for sem in ["1학기", "2학기"]:
+                for grp in ["택3", "택1", "택4"]:
+                    items = combo[sem][grp]
+                    if isinstance(items, list):
+                        if course_name in items:
+                            idx = items.index(course_name)
+                            combo_bonus = max(combo_bonus, (len(items) - idx) * 0.5)
+                    else:
+                        if course_name == items:
+                            combo_bonus = max(combo_bonus, 1.0)
+    total = min(100, total + combo_bonus)
     return round(total, 1), scores
 
 def generate_explanation(course_name, course, scores, profile):
@@ -587,13 +603,13 @@ def render_combo_summary(combo):
                     st.caption(f"🏆 상위 {pick_count}개 추천 과목")
                 for rank, cname in enumerate(top_courses, 1):
                     sc = all_scores[cname]
-                    render_ai_card(rank, cname, COURSES[cname], sc["total"], sc["breakdown"], sc["reasons"], sc["warnings"], pick_count)
+                    render_ai_card(rank, cname, COURSES[cname], sc["total"], sc["breakdown"], sc["reasons"], sc["warnings"], is_top=True)
                 if remaining:
                     with st.expander(f"나머지 {len(remaining)}개 과목 보기"):
                         for i, cname in enumerate(remaining):
                             rank = len(top_courses) + i + 1 
                             sc = all_scores[cname]
-                            render_ai_card(rank, cname, COURSES[cname], sc["total"], sc["breakdown"], sc["reasons"], sc["warnings"], pick_count)
+                            render_ai_card(rank, cname, COURSES[cname], sc["total"], sc["breakdown"], sc["reasons"], sc["warnings"], is_top=False)
 
 def get_rec_names(combo):
     names = set()
@@ -604,8 +620,8 @@ def get_rec_names(combo):
         names.update(s["택4"])
     return names
 
-def render_ai_card(rank, name, info, total_score, scores, reasons, warnings, pick_count):
-    cls = "ai-card top" if rank <= pick_count else "ai-card"
+def render_ai_card(rank, name, info, total_score, scores, reasons, warnings, is_top=False):
+    cls = "ai-card top" if is_top else "ai-card"
     sc_cls = "high" if total_score >= 70 else ("mid" if total_score >= 50 else "low")
     ev_cls = "badge-eval-rel" if "상대" in info["eval"] else "badge-eval-abs"
     tracks_html = "".join(f'<span class="badge badge-track">{t}</span>' for t in info["tracks"])
@@ -787,13 +803,13 @@ with tab1:
                     st.caption(f"🏆 상위 {pick_count}개 추천 과목")
                 for rank, cname in enumerate(top_courses, 1):
                     sc = all_scores[cname]
-                    render_ai_card(rank, cname, COURSES[cname], sc["total"], sc["breakdown"], sc["reasons"], sc["warnings"], pick_count)
+                    render_ai_card(rank, cname, COURSES[cname], sc["total"], sc["breakdown"], sc["reasons"], sc["warnings"], is_top=True)
                 if remaining:
                     with st.expander(f"나머지 {len(remaining)}개 과목 보기"):
                         for i, cname in enumerate(remaining):
                             rank = len(top_courses) + i + 1 
                             sc = all_scores[cname]
-                            render_ai_card(rank, cname, COURSES[cname], sc["total"], sc["breakdown"], sc["reasons"], sc["warnings"], pick_count)
+                            render_ai_card(rank, cname, COURSES[cname], sc["total"], sc["breakdown"], sc["reasons"], sc["warnings"], is_top=False)
 
 # ── 탭2 ──
 with tab2:
