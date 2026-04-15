@@ -54,8 +54,8 @@ st.markdown("""
     padding-right: 2rem;
 }
     [data-testid="stSidebar"] {
-    width: 465px !important;
-    min-width: 465px !important;
+    width: 470px !important;
+    min-width: 470px !important;
     max-width: 680px !important;
 }
 </style>
