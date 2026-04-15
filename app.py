@@ -53,6 +53,11 @@ st.markdown("""
     padding-left: 2rem;
     padding-right: 2rem;
 }
+    [data-testid="stSidebar"] {
+    width: 380px !important;
+    min-width: 380px !important;
+    max-width: 380px !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
