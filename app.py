@@ -5,7 +5,7 @@ st.set_page_config(page_title="삼괴고 3학년 선택과목 가이드", page_i
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
-    html, body, .stApp { font-family: 'Noto Sans KR', sans-serif; background: linear-gradient(180deg, #f0f4ff 0%, #fafbff 100%); }}
+    html, body, .stApp { font-family: 'Noto Sans KR', sans-serif; background: linear-gradient(180deg, #f0f4ff 0%, #fafbff 100%); }
     .main-header { text-align: center; padding: 1.2rem 0 0.8rem; }
     .main-header h1 { font-size: 1.8rem; font-weight: 700; color: #1a365d; margin-bottom: 0.2rem; }
     .main-header p { color: #64748b; font-size: 0.9rem; }
