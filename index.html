@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📚 삼괴고 3학년 선택과목 가이드</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <button id="sidebar-toggle" class="sidebar-toggle" aria-label="프로필 설정 열기">🤖 프로필 설정</button>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+      <h2 class="sidebar-title">🤖 나의 프로필 설정</h2>
+      <p class="sidebar-caption">프로필을 입력하면 AI 맞춤 추천을 받을 수 있어요!</p>
+
+      <form id="profile-form">
+        <div class="field-group">
+          <label class="field-label">🎯 진로</label>
+          <input type="text" id="dream-job" class="text-input" placeholder="예: 프로그래머, 간호사, 교사 ...">
+          <div class="field-sublabel">관심 계열 (복수 선택 가능)</div>
+          <div class="dropdown-multi" id="career-tracks-dd">
+            <button type="button" class="dropdown-trigger" id="career-tracks-trigger" aria-expanded="false">
+              <span class="dropdown-label">선택해주세요</span>
+              <span class="dropdown-arrow">▾</span>
+            </button>
+            <div class="dropdown-panel" id="career-tracks" hidden></div>
+          </div>
+        </div>
+
+        <hr class="field-divider">
+
+        <div class="field-group">
+          <label class="field-label">📊 현재 성적 (2학년 기준)</label>
+          <div id="grades-row" class="grades-row"></div>
+        </div>
+
+        <hr class="field-divider">
+
+        <div class="field-group">
+          <label class="field-label">💡 과목 호불호</label>
+          <div class="field-sublabel">좋아하는/잘하는 영역</div>
+          <div id="likes" class="checkbox-row"></div>
+          <div class="field-sublabel">싫어하는/어려운 영역</div>
+          <div id="dislikes" class="checkbox-row"></div>
+        </div>
+
+        <hr class="field-divider">
+
+        <div class="field-group">
+          <label class="field-label">📝 학습 스타일</label>
+          <div class="field-sublabel">선호하는 학습 방식</div>
+          <div id="learning-style" class="radio-row" data-default="골고루">
+            <label><input type="radio" name="learning-style" value="암기"> 암기</label>
+            <label><input type="radio" name="learning-style" value="이해"> 이해</label>
+            <label><input type="radio" name="learning-style" value="실습"> 실습</label>
+            <label><input type="radio" name="learning-style" value="골고루" checked> 골고루</label>
+          </div>
+          <div class="field-sublabel">평가 방식 선호</div>
+          <div id="eval-pref" class="radio-col" data-default="상관없어요">
+            <label><input type="radio" name="eval-pref" value="상대평가도 괜찮아요"> 상대평가도 괜찮아요</label>
+            <label><input type="radio" name="eval-pref" value="절대평가가 편해요"> 절대평가가 편해요</label>
+            <label><input type="radio" name="eval-pref" value="상관없어요" checked> 상관없어요</label>
+          </div>
+          <div class="field-sublabel">공부 부담 수준 <span class="hint">(1=여유롭게, 5=빡빡하게)</span></div>
+          <div class="slider-row">
+            <input type="range" id="workload-pref" min="1" max="5" value="3">
+            <output id="workload-pref-out">3</output>
+          </div>
+          <div class="field-sublabel">내신 등급 중요도 <span class="hint">(1=배우고 싶은 거 위주, 5=등급 유리한 과목 위주)</span></div>
+          <div class="slider-row">
+            <input type="range" id="grade-sens" min="1" max="5" value="3">
+            <output id="grade-sens-out">3</output>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn">🚀 AI 추천 받기</button>
+      </form>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="main-header">
+      <h1>📚 삼괴고 3학년 선택과목 가이드</h1>
+      <p>2025학년도 입학생 교육과정 편제 기준 · 진로별 추천 조합 &amp; AI 맞춤 추천</p>
+    </header>
+
+    <div class="warning-box">
+      <div class="warning-title">⚠️ 과목 선택 전 반드시 읽어주세요!</div>
+      <div class="warning-body">
+        본 가이드 및 AI 맞춤 추천 결과는 학생 여러분의 선택을 돕기 위한 <b>참고자료</b>일 뿐입니다.<br>
+        최종 과목 선택은 본인의 희망 진로, 목표 대학의 입시 요강을 꼼꼼히 확인하고, <b>교과 담당 선생님 및 담임 선생님, 부모님 등과 충분한 상담을 통해 신중하게 결정</b>하시기 바랍니다.
+      </div>
+    </div>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab-btn active" data-tab="ai" role="tab">🤖 AI 맞춤 추천</button>
+      <button class="tab-btn" data-tab="track" role="tab">🎯 진로별 추천 조합</button>
+      <button class="tab-btn" data-tab="search" role="tab">🔍 키워드 검색</button>
+      <button class="tab-btn" data-tab="all" role="tab">📋 전체 과목 보기</button>
+    </nav>
+
+    <section class="tab-pane active" id="tab-ai" role="tabpanel">
+      <div id="ai-empty" class="empty-state">
+        <div class="empty-icon">🤖</div>
+        <h3>AI 맞춤 추천을 받아보세요!</h3>
+        <p>왼쪽 사이드바(또는 상단 버튼)에서 <b>나의 프로필</b>을 설정하면<br>나에게 딱 맞는 과목을 추천해 드립니다.</p>
+      </div>
+      <div id="ai-result" hidden></div>
+    </section>
+
+    <section class="tab-pane" id="tab-track" role="tabpanel">
+      <label for="track-select" class="select-label">관심 진로를 선택하세요</label>
+      <select id="track-select" class="select-input"></select>
+      <div id="track-result"></div>
+    </section>
+
+    <section class="tab-pane" id="tab-search" role="tabpanel">
+      <label for="search-input" class="select-label">키워드를 입력하세요</label>
+      <input type="text" id="search-input" class="text-input" placeholder="예: 의대, 반도체, 외교, 코딩, 간호 ...">
+      <p class="caption">쉼표로 여러 키워드를 입력할 수 있어요</p>
+      <div id="search-result">
+        <div class="info-box">👆 키워드를 입력하면 관련 과목을 검색하고, 같은 선택 그룹의 나머지 과목도 함께 보여줍니다.</div>
+      </div>
+    </section>
+
+    <section class="tab-pane" id="tab-all" role="tabpanel">
+      <div class="filter-row">
+        <label><input type="checkbox" id="f-rel" checked> 5등급 상대평가 과목</label>
+        <label><input type="checkbox" id="f-abs" checked> 절대평가 과목</label>
+        <label><input type="checkbox" id="f-pf" checked> P/F 과목</label>
+      </div>
+      <div id="all-result"></div>
+    </section>
+
+    <footer class="footer">
+      삼괴고등학교 교육과정부 · 2025학년도 입학생 교육과정 편제표 기준<br>
+      해당 내용은 어디까지나 참고 자료일 뿐, 꼭 해당 과목으로 선택해야 하는 것은 아닙니다<br>
+      ※ 과목별 상세 내용은 담당 교과 선생님께 문의하세요
+    </footer>
+  </main>
+
+  <script src="data.js"></script>
+  <script src="scoring.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
