@@ -3,7 +3,7 @@ title: 삼괴고 3학년 선택과목 가이드
 emoji: 📚
 colorFrom: blue
 colorTo: indigo
-sdk: static
+sdk: docker
 pinned: false
 ---
 
